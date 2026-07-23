@@ -404,7 +404,7 @@ export default function ProLeadFormModal({ isOpen, onClose, onUnlock }) {
                   <input className={`bauble_input ${isOutsideUK === null ? 'unselected' : ''}`} id="bauble_check" name="bauble" type="checkbox" checked={isOutsideUK === true} onChange={(e) => setIsOutsideUK(e.target.checked)} />
                   <label className="bauble_label" htmlFor="bauble_check">Toggle</label>
                 </div>
-                <span className={`text-xs font-bold transition-colors ${isOutsideUK === true ? 'text-rose-500' : 'text-neutral-400'}`}>Planning to move to the UK</span>
+                <span className={`text-xs font-bold transition-colors ${isOutsideUK === true ? 'text-rose-500' : 'text-neutral-400'}`}>Planning to UK</span>
               </div>
 
               {error && <p className="text-xs text-rose-500 font-bold text-center">{error}</p>}
