@@ -909,7 +909,7 @@ Upload this report into Gemini or Perplexity and ask:
 
 
                 {/* Legend and Monthly Strategy with restored Small SVG Pie Chart */}
-                <div className="bg-[#161C2D] border border-[#232A3B] rounded-[20px] p-5 shadow-md flex flex-col sm:flex-row items-center gap-5 w-full">
+                <div className="bg-[#030202] border border-[#232A3B] rounded-[20px] p-5 shadow-md flex flex-col sm:flex-row items-center gap-5 w-full">
                   {/* Small SVG Donut / Pie Chart */}
                   <div className="relative w-28 h-28 flex-shrink-0 flex items-center justify-center bg-[#111625] rounded-full p-2 border border-[#232A3B]">
                     <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
@@ -1011,7 +1011,7 @@ Upload this report into Gemini or Perplexity and ask:
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center bg-[#161C2D] border border-[#161C2D] rounded-[14px] p-5 shadow-lg">
+                    <div className="flex justify-between items-center bg-[#030202] border border-[#161C2D] rounded-[14px] p-5 shadow-lg">
                       <span className="text-xs font-bold uppercase tracking-wider text-white">Monthly Saving Target</span>
                       <div className="text-right">
                         <span className="block text-2xl font-black text-[#B6F36A] figure">£{liveTargetMonthlySavingsGBP.toLocaleString('en-GB')} / mo</span>
