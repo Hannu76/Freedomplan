@@ -9,7 +9,7 @@ import { IMAGES } from '../utils/images'
 import { playClickSound, playThrottledClickSound } from '../utils/sound'
 
 export default function Dashboard({ onViewReport, onRequirePro }) {
-  const { derived, rate, customPlan, updateCustomPlan, basicLoan, setBasicLoan, darkMode, setDarkMode, isProUnlocked, isLoggedIn, setIsLoggedIn, isSessionActive, touchSession, currentUser } = useStore()
+  const { derived, rate, customPlan, updateCustomPlan, basicLoan, setBasicLoan, darkMode, setDarkMode, isProUnlocked, isLoggedIn, setIsLoggedIn, isSessionActive, touchSession, currentUser, completeValueUpdate } = useStore()
   const { 
     savedThisMonth, 
     savedThisYear, 
@@ -31,6 +31,11 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
   const [isCustomTargetNotificationDismissed, setIsCustomTargetNotificationDismissed] = React.useState(false)
   const pendingDownloadRef = React.useRef(false)
   const [isRadarHovered, setIsRadarHovered] = useState(false)
+
+  const handleFinishLoanEdit = () => {
+    setIsEditingLoan(false)
+    completeValueUpdate()
+  }
 
   // Expense range midpoint used for "money left" math (rent varies £250-300)
   const rentMid = customPlan.rentMid
@@ -164,23 +169,16 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   <input
                     type="number"
                     value={basicLoan}
-                    onFocus={() => playClickSound()}
-                    onChange={(e) => {
-                      setBasicLoan(Number(e.target.value) || 0)
-                      playThrottledClickSound()
-                    }}
-                    onBlur={() => setIsEditingLoan(false)}
-                    onKeyDown={(e) => e.key === 'Enter' && setIsEditingLoan(false)}
+                    onChange={(e) => setBasicLoan(Number(e.target.value) || 0)}
+                    onBlur={handleFinishLoanEdit}
+                    onKeyDown={(e) => e.key === 'Enter' && handleFinishLoanEdit()}
                     autoFocus
                     className="figure text-3xl font-extrabold text-[#0D0F14] bg-transparent border-b border-dashed border-neutral-400 focus:border-lime-500 outline-none w-[180px] p-0 m-0"
                   />
                 </>
               ) : (
                 <div 
-                  onClick={() => {
-                    setIsEditingLoan(true)
-                    playClickSound()
-                  }}
+                  onClick={() => setIsEditingLoan(true)}
                   className="cursor-pointer flex items-baseline gap-1 py-1 hover:bg-[#4A7BFF]/10 rounded-lg -ml-1 px-1 transition-all"
                   title="Click to edit"
                 >
@@ -264,7 +262,7 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   accent="text-[#161C2D]"
                   bgImage={IMAGES.currency}
                   className="animate-stagger delay-100"
-                  onSave={(val) => updateCustomPlan({ monthlyIncome: val })}
+                  onSave={(val) => { updateCustomPlan({ monthlyIncome: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Rent (Midpoint)"
@@ -273,7 +271,7 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   bgImage={IMAGES.rent}
                   className="animate-stagger delay-200"
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ rentMid: val })}
+                  onSave={(val) => { updateCustomPlan({ rentMid: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Utilities & Bills"
@@ -281,7 +279,7 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   bgImage={IMAGES.bills}
                   className="animate-stagger delay-300"
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ bills: val })}
+                  onSave={(val) => { updateCustomPlan({ bills: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="UK Commute & Travel"
@@ -289,7 +287,7 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   bgImage={IMAGES.commute}
                   className="animate-stagger delay-400"
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ travel: val })}
+                  onSave={(val) => { updateCustomPlan({ travel: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Groceries & Food"
@@ -297,7 +295,7 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   bgImage={IMAGES.food}
                   className="animate-stagger delay-500"
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ food: val })}
+                  onSave={(val) => { updateCustomPlan({ food: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Monthly Prepayment Target"
@@ -307,7 +305,7 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   bgImage={IMAGES.target}
                   className="animate-stagger delay-600"
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ monthlySavingsTarget: val })}
+                  onSave={(val) => { updateCustomPlan({ monthlySavingsTarget: val }); completeValueUpdate({ target: val }); }}
                 />
               </div>
             </div>
@@ -320,42 +318,42 @@ export default function Dashboard({ onViewReport, onRequirePro }) {
                   valueNumber={customPlan.shopping}
                   bgImage={IMAGES.shopping}
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ shopping: val })}
+                  onSave={(val) => { updateCustomPlan({ shopping: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Entertainment"
                   valueNumber={customPlan.entertainment}
                   bgImage={IMAGES.entertainment}
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ entertainment: val })}
+                  onSave={(val) => { updateCustomPlan({ entertainment: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Healthcare"
                   valueNumber={customPlan.health}
                   bgImage={IMAGES.healthcare}
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ health: val })}
+                  onSave={(val) => { updateCustomPlan({ health: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Education"
                   valueNumber={customPlan.education}
                   bgImage={IMAGES.education}
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ education: val })}
+                  onSave={(val) => { updateCustomPlan({ education: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Insurance"
                   valueNumber={customPlan.insurance}
                   bgImage={IMAGES.insurance}
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ insurance: val })}
+                  onSave={(val) => { updateCustomPlan({ insurance: val }); completeValueUpdate(); }}
                 />
                 <EditableStatTile
                   label="Miscellaneous"
                   valueNumber={customPlan.misc}
                   bgImage={IMAGES.misc}
                   prefix="£"
-                  onSave={(val) => updateCustomPlan({ misc: val })}
+                  onSave={(val) => { updateCustomPlan({ misc: val }); completeValueUpdate(); }}
                 />
               </div>
             </div>
