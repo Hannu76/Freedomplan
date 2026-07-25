@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnimatedCounter } from './ui';
+import { AnimatedCounter } from './ui.jsx';
 import { useStore } from '../context/StoreContext';
 
 const CURRENCIES = [
