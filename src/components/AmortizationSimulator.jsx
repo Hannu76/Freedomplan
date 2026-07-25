@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { useStore } from '../context/StoreContext'
 import { PLAN, LOAN } from '../config'
-import { Card, StatTile, Badge } from './ui'
+import { Card, StatTile, Badge } from './ui.jsx'
 export default function AmortizationSimulator() {
   const { simulator, setSimulator, timeline, rate, basicLoan, derived } = useStore()
   const { targetYearlyLumpSumINR } = derived
