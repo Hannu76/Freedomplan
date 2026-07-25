@@ -1,7 +1,7 @@
 import React from 'react'
 import { useStore } from '../context/StoreContext'
 import { PLAN } from '../config'
-import { Card, StatTile, Badge } from './ui'
+import { Card, StatTile, Badge } from './ui.jsx'
 import { daysUntilNextDec31 } from '../utils/dates'
 
 export default function Reminders() {
