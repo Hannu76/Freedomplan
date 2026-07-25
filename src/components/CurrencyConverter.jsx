@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useStore } from '../context/StoreContext'
 import { PLAN, CURRENCY } from '../config'
-import { Card, StatTile } from './ui'
+import { Card, StatTile } from './ui.jsx'
 
 export default function CurrencyConverter() {
   const { rate, effectiveRates } = useStore()
