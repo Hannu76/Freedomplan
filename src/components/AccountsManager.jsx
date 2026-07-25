@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useStore } from '../context/StoreContext'
-import { Card, Badge, StatTile, Modal } from './ui'
+import { Card, Badge, StatTile, Modal } from './ui.jsx'
 
 export default function AccountsManager() {
   const { accounts, addAccount, updateAccount, deleteAccount, rate, derived } = useStore()
