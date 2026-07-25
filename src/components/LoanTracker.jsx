@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { useStore } from '../context/StoreContext'
 import { LOAN } from '../config'
-import { Card, StatTile, Badge } from './ui'
+import { Card, StatTile, Badge } from './ui.jsx'
 
 /**
  * Builds the full 3-year loan schedule: EMI deducted every month, plus a
