@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useStore } from '../context/StoreContext'
 import { PLAN, LOAN, CURRENCY } from '../config'
-import { Card, Badge, StatTile, AnimatedCounter } from './ui'
+import { Card, Badge, StatTile, AnimatedCounter } from './ui.jsx'
 import FlywayModal from './FlywayModal'
 import { triggerReportDownload, triggerRepaymentPDFReport } from '../utils/downloadReport'
 import { IMAGES } from '../utils/images'
