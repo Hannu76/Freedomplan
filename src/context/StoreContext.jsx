@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext, useMemo, useState } from 'react'
 import { useLocalStorage } from '../utils/useLocalStorage'
 import { buildMonthTimeline } from '../utils/dates'
 import { PLAN, CURRENCY, LOAN } from '../config'
@@ -173,6 +173,16 @@ export function StoreProvider({ children }) {
     extraMonthlyPrepaymentGBP: 0,
     extraYearlyLumpSumINR: 0,
     simulatedRate: CURRENCY.defaultRate,
+  }
+
+  const [reportModal, setReportModal] = useState({ isOpen: false, title: '', htmlContent: '' })
+
+  const openReportModal = (title, htmlContent) => {
+    setReportModal({ isOpen: true, title, htmlContent })
+  }
+
+  const closeReportModal = () => {
+    setReportModal({ isOpen: false, title: '', htmlContent: '' })
   }
 
   // User customizable timeline structure & start date
@@ -461,6 +471,9 @@ export function StoreProvider({ children }) {
     isSessionActive,
     touchSession,
     completeValueUpdate,
+    reportModal,
+    openReportModal,
+    closeReportModal,
   }
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
