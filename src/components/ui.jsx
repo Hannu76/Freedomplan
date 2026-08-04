@@ -1,5 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { playClickSound, playThrottledClickSound } from '../utils/sound'
+
+export function ImageWithSkeleton({ src, alt, className = '' }) {
+  const [loaded, setLoaded] = React.useState(false);
+
+  return (
+    <>
+      {!loaded && (
+        <div className={`absolute inset-0 bg-neutral-200 animate-pulse ${className?.replace(/z-\[-[0-9]+\]/g, 'z-[-1]')}`} />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+      />
+    </>
+  );
+}
+
 export function Card({ title, eyebrow, action, centerAction, children, className = '', glow = false }) {
   return (
     <section
@@ -42,18 +61,16 @@ export function ProgressBar({ value, max, onTrack = true, showLabel = true, heig
           <span>
             {value.toLocaleString('en-GB', { maximumFractionDigits: 0 })} <span className="text-[#667085]">/ {max.toLocaleString('en-GB', { maximumFractionDigits: 0 })}</span>
           </span>
-          <span className={`font-bold px-2.5 py-0.5 rounded-full text-xs ${
-            onTrack ? 'bg-[#B6F36A]/20 text-[#161C2D] border border-[#B6F36A]/40' : 'bg-rose-500/15 text-rose-600 border border-rose-500/30'
-          }`}>
+          <span className={`font-bold px-2.5 py-0.5 rounded-full text-xs ${onTrack ? 'bg-[#B6F36A]/20 text-[#161C2D] border border-[#B6F36A]/40' : 'bg-rose-500/15 text-rose-600 border border-rose-500/30'
+            }`}>
             {pct.toFixed(0)}%
           </span>
         </div>
       )}
       <div className={`${heightClass} w-full rounded-full bg-[#F9FBFD] overflow-hidden p-0.5 border border-[#EEF2F7]`}>
         <div
-          className={`h-full rounded-full transition-all duration-700 ease-out ${
-            onTrack ? 'bg-[#B6F36A]' : 'bg-rose-500'
-          }`}
+          className={`h-full rounded-full transition-all duration-700 ease-out ${onTrack ? 'bg-[#B6F36A]' : 'bg-rose-500'
+            }`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -84,15 +101,15 @@ export function StatTile({ label, value, sub, accent, badge, bgImage, className 
     >
       {bgImage && (
         <>
-          <img
+          <ImageWithSkeleton
             src={bgImage}
             alt={label}
-            className="absolute inset-0 w-full h-full object-cover z-[-2] transition-transform duration-700 group-hover:scale-105 opacity-100"
+            className="absolute inset-0 w-full h-full object-cover z-[-2] transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent w-full sm:w-3/5 z-[-1]" />
         </>
       )}
-      
+
       <div className={`relative z-10 transition-all duration-500 flex flex-col justify-between h-full flex-1 ${isLocked ? 'blur-[6px] opacity-60 pointer-events-none select-none group-hover:blur-[8px]' : ''}`}>
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -114,10 +131,10 @@ export function StatTile({ label, value, sub, accent, badge, bgImage, className 
 
       {isLocked && (
         <div className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-           <div className="flex items-center gap-2 bg-[#161C2D] text-white px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider shadow-xl border border-[#334155] transform scale-95 group-hover:scale-100 transition-transform duration-300">
-             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#B6F36A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-             Unlock Pro
-           </div>
+          <div className="flex items-center gap-2 bg-[#161C2D] text-white px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-wider shadow-xl border border-[#334155] transform scale-95 group-hover:scale-100 transition-transform duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#B6F36A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+            Unlock Pro
+          </div>
         </div>
       )}
     </div>
@@ -147,10 +164,10 @@ export function EditableStatTile({ label, valueNumber, prefix = '', sub, badge, 
     >
       {bgImage && (
         <>
-          <img
+          <ImageWithSkeleton
             src={bgImage}
             alt={label}
-            className="absolute inset-0 w-full h-full object-cover z-[-2] transition-transform duration-700 group-hover:scale-105 opacity-100"
+            className="absolute inset-0 w-full h-full object-cover z-[-2] transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent w-full sm:w-3/5 z-[-1]" />
         </>
@@ -159,16 +176,16 @@ export function EditableStatTile({ label, valueNumber, prefix = '', sub, badge, 
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold uppercase tracking-wider text-[#161C2D] transition-colors">
-            {label}
-          </p>
-          <div className="flex items-center gap-1.5">
-            {badge && (
-              <span className="bg-white/95 text-[#161C2D] border border-[#EEF2F7] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm-clean">
-                {badge}
-              </span>
-            )}
-            {/* Edit button  hidden until card is hovered, or shown as Save when editing */}
-            {/* User requested to remove this hidden modify button for now:
+              {label}
+            </p>
+            <div className="flex items-center gap-1.5">
+              {badge && (
+                <span className="bg-white/95 text-[#161C2D] border border-[#EEF2F7] text-[11px] font-bold px-3 py-1 rounded-full shadow-sm-clean">
+                  {badge}
+                </span>
+              )}
+              {/* Edit button  hidden until card is hovered, or shown as Save when editing */}
+              {/* User requested to remove this hidden modify button for now:
             <button
               onClick={(e) => {
                 e.stopPropagation()
@@ -185,37 +202,37 @@ export function EditableStatTile({ label, valueNumber, prefix = '', sub, badge, 
               {isEditing ? ' Save' : ' Edit'}
             </button>
             */}
+            </div>
           </div>
-        </div>
 
-        {isEditing ? (
-          <div className="flex items-center gap-1 my-1">
-            <span className="text-xl font-bold text-[#0D0F14]">{prefix}</span>
-            <input
-              type="number"
-              value={val}
-              onChange={(e) => setVal(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-              onBlur={handleSave}
-              autoFocus
-              className="w-full rounded-[12px] border-2 border-[#161C2D] bg-white px-3 py-1 text-2xl font-extrabold text-[#0D0F14] focus:outline-none shadow-sm"
-            />
-          </div>
-        ) : (
-          <div
-            onClick={() => setIsEditing(true)}
-            className="cursor-pointer flex items-center gap-2 py-1 group/val hover:bg-[#4A7BFF]/10 hover:shadow-[inset_0_0_0_1px_rgba(74,123,255,0.2)] rounded-lg px-2 -ml-2 transition-all duration-200"
-            title="Click to edit"
-          >
-            <p className={`figure text-2xl sm:text-3xl font-extrabold tracking-tight ${accent || 'text-[#0D0F14]'} transition-colors`}>
-              <AnimatedCounter prefix={prefix} value={valueNumber} />
-            </p>
-            {/* Pencil hint  appears on hover */}
-            <span className="text-[11px] text-[#4A7BFF] opacity-0 group-hover/val:opacity-100 transition-opacity font-bold select-none">
-              
-            </span>
-          </div>
-        )}
+          {isEditing ? (
+            <div className="flex items-center gap-1 my-1">
+              <span className="text-xl font-bold text-[#0D0F14]">{prefix}</span>
+              <input
+                type="number"
+                value={val}
+                onChange={(e) => setVal(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                onBlur={handleSave}
+                autoFocus
+                className="w-full rounded-[12px] border-2 border-[#161C2D] bg-white px-3 py-1 text-2xl font-extrabold text-[#0D0F14] focus:outline-none shadow-sm"
+              />
+            </div>
+          ) : (
+            <div
+              onClick={() => setIsEditing(true)}
+              className="cursor-pointer flex items-center gap-2 py-1 group/val hover:bg-[#4A7BFF]/10 hover:shadow-[inset_0_0_0_1px_rgba(74,123,255,0.2)] rounded-lg px-2 -ml-2 transition-all duration-200"
+              title="Click to edit"
+            >
+              <p className={`figure text-2xl sm:text-3xl font-extrabold tracking-tight ${accent || 'text-[#0D0F14]'} transition-colors`}>
+                <AnimatedCounter prefix={prefix} value={valueNumber} />
+              </p>
+              {/* Pencil hint  appears on hover */}
+              <span className="text-[11px] text-[#4A7BFF] opacity-0 group-hover/val:opacity-100 transition-opacity font-bold select-none">
+
+              </span>
+            </div>
+          )}
         </div>
 
         {sub && <p className="text-xs font-semibold text-[#161C2D]/80 mt-2 flex items-center gap-1.5">{sub}</p>}
@@ -236,9 +253,8 @@ export function Badge({ children, variant = 'default', className = '' }) {
   }
   return (
     <span
-      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border transition-all ${
-        styles[variant] || styles.default
-      } ${className}`}
+      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border transition-all ${styles[variant] || styles.default
+        } ${className}`}
     >
       {children}
     </span>
@@ -304,7 +320,7 @@ export function Modal({ isOpen, onClose, title, children }) {
   )
 }
 
-export function AnimatedCounter({ value, duration = 1500, prefix = '', suffix = '', format = true }) {
+export function AnimatedCounter({ value, duration = 1500, prefix = '', suffix = '', format = true, prefixClassName = '' }) {
   const [displayValue, setDisplayValue] = React.useState(0);
 
   const currentValRef = React.useRef(Number(value) || 0);
@@ -313,7 +329,7 @@ export function AnimatedCounter({ value, duration = 1500, prefix = '', suffix = 
     let startTime;
     const startValue = currentValRef.current;
     const endValue = Number(value) || 0;
-    
+
     // cubic-bezier(0.1, 0.9, 0.2, 1) approximation
     const easeOutExpo = (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 
@@ -322,11 +338,11 @@ export function AnimatedCounter({ value, duration = 1500, prefix = '', suffix = 
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
       const easedProgress = easeOutExpo(progress);
-      
+
       const nextVal = startValue + (endValue - startValue) * easedProgress;
       setDisplayValue(nextVal);
       currentValRef.current = nextVal;
-      
+
       if (progress < 1) {
         animationFrame = requestAnimationFrame(tick);
       } else {
@@ -334,14 +350,20 @@ export function AnimatedCounter({ value, duration = 1500, prefix = '', suffix = 
         currentValRef.current = endValue;
       }
     };
-    
+
     animationFrame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animationFrame);
   }, [value, duration]);
 
-  const formattedValue = format 
+  const formattedValue = format
     ? Math.floor(displayValue).toLocaleString('en-IN')
     : Math.floor(displayValue);
 
-  return <span className="animated-counter">{prefix}{formattedValue}{suffix}</span>;
+  return (
+    <span className="animated-counter">
+      {prefix && <span className={prefixClassName}>{prefix}</span>}
+      {formattedValue}
+      {suffix}
+    </span>
+  );
 }
