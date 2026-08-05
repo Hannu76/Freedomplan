@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { cn } from "@/lib/utils";  // ❌ This file doesn't exist in your project
+
 
 // Inlined cn utility — no external dependency needed
 function cn(...classes) {
-    return classes.filter(Boolean).join(" ");
+    return classes.filter(Boolean).join(" ");  // ✅ Same behaviour, no missing file
 }
-
 
 export function FlipText({
     className,
