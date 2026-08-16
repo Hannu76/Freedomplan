@@ -1,0 +1,264 @@
+[
+  {
+    "email": "john_new_user@example.com",
+    "name": "John Newbie",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:24:43.163Z",
+    "createdAt": "2026-08-16T05:07:45.984Z",
+    "unsubscribedAt": "2026-08-16T05:07:46.031Z"
+  },
+  {
+    "email": "no_consent_user@example.com",
+    "name": "No Consent User",
+    "consent": false,
+    "status": "inactive",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:53:27.581Z",
+    "createdAt": "2026-08-16T05:07:46.001Z"
+  },
+  {
+    "email": "free_creator@example.com",
+    "name": "Free Creator",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:53:27.602Z",
+    "createdAt": "2026-08-16T05:07:46.018Z"
+  },
+  {
+    "email": "live_test_creator@example.com",
+    "name": "Live Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "live_test",
+    "updatedAt": "2026-08-16T05:09:37.444Z",
+    "createdAt": "2026-08-16T05:09:37.444Z",
+    "unsubscribedAt": "2026-08-16T05:09:37.453Z"
+  },
+  {
+    "email": "john_new_1786857920574@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:25:20.575Z",
+    "createdAt": "2026-08-16T05:25:20.575Z"
+  },
+  {
+    "email": "unsub_test_1786857920632@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:25:20.633Z",
+    "createdAt": "2026-08-16T05:25:20.633Z",
+    "unsubscribedAt": "2026-08-16T05:25:20.636Z"
+  },
+  {
+    "email": "john_new_1786858190421@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:29:50.422Z",
+    "createdAt": "2026-08-16T05:29:50.422Z"
+  },
+  {
+    "email": "unsub_test_1786858190492@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:29:50.494Z",
+    "createdAt": "2026-08-16T05:29:50.494Z",
+    "unsubscribedAt": "2026-08-16T05:29:50.497Z"
+  },
+  {
+    "email": "john_new_1786858215314@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:30:15.315Z",
+    "createdAt": "2026-08-16T05:30:15.315Z"
+  },
+  {
+    "email": "unsub_test_1786858215373@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:30:15.374Z",
+    "createdAt": "2026-08-16T05:30:15.374Z",
+    "unsubscribedAt": "2026-08-16T05:30:15.377Z"
+  },
+  {
+    "email": "john_new_1786858238351@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:30:38.352Z",
+    "createdAt": "2026-08-16T05:30:38.352Z"
+  },
+  {
+    "email": "unsub_test_1786858238413@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:30:38.413Z",
+    "createdAt": "2026-08-16T05:30:38.413Z",
+    "unsubscribedAt": "2026-08-16T05:30:38.416Z"
+  },
+  {
+    "email": "john_new_1786858500317@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:35:00.319Z",
+    "createdAt": "2026-08-16T05:35:00.319Z"
+  },
+  {
+    "email": "unsub_test_1786858500389@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:35:00.390Z",
+    "createdAt": "2026-08-16T05:35:00.390Z",
+    "unsubscribedAt": "2026-08-16T05:35:00.392Z"
+  },
+  {
+    "email": "john_new_1786858544621@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:35:44.622Z",
+    "createdAt": "2026-08-16T05:35:44.622Z"
+  },
+  {
+    "email": "unsub_test_1786858544680@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:35:44.681Z",
+    "createdAt": "2026-08-16T05:35:44.681Z",
+    "unsubscribedAt": "2026-08-16T05:35:44.683Z"
+  },
+  {
+    "email": "john_new_1786858876263@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:41:16.265Z",
+    "createdAt": "2026-08-16T05:41:16.265Z"
+  },
+  {
+    "email": "unsub_test_1786858876336@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:41:16.337Z",
+    "createdAt": "2026-08-16T05:41:16.337Z",
+    "unsubscribedAt": "2026-08-16T05:41:16.339Z"
+  },
+  {
+    "email": "naveedmd78600@gmail.com",
+    "name": "naveedmd78600",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.294Z",
+    "createdAt": "2026-08-16T05:52:17.294Z"
+  },
+  {
+    "email": "hannu786464@gmail.com",
+    "name": "hannu786464",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.317Z",
+    "createdAt": "2026-08-16T05:52:17.317Z"
+  },
+  {
+    "email": "jashujaswanth050@gmail.com",
+    "name": "jashujaswanth050",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.336Z",
+    "createdAt": "2026-08-16T05:52:17.336Z"
+  },
+  {
+    "email": "hannu464@gmail.com",
+    "name": "hannu464",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.358Z",
+    "createdAt": "2026-08-16T05:52:17.358Z"
+  },
+  {
+    "email": "hannu4@outlook.com",
+    "name": "hannu4",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.376Z",
+    "createdAt": "2026-08-16T05:52:17.376Z"
+  },
+  {
+    "email": "renuka.yam.b19@gmail.com",
+    "name": "renuka.yam.b19",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.394Z",
+    "createdAt": "2026-08-16T05:52:17.394Z"
+  },
+  {
+    "email": "naveedmd00@gmail.com",
+    "name": "naveedmd00",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.411Z",
+    "createdAt": "2026-08-16T05:52:17.411Z"
+  },
+  {
+    "email": "anasurrahmansheik@gmail.com",
+    "name": "anasurrahmansheik",
+    "consent": true,
+    "status": "active",
+    "source": "existing_customer_wave1",
+    "updatedAt": "2026-08-16T05:52:17.429Z",
+    "createdAt": "2026-08-16T05:52:17.429Z"
+  },
+  {
+    "email": "john_new_1786859607547@example.com",
+    "name": "John Newbie",
+    "consent": true,
+    "status": "active",
+    "source": "registration_test",
+    "updatedAt": "2026-08-16T05:53:27.549Z",
+    "createdAt": "2026-08-16T05:53:27.549Z"
+  },
+  {
+    "email": "unsub_test_1786859607622@example.com",
+    "name": "Unsub Tester",
+    "consent": false,
+    "status": "unsubscribed",
+    "source": "registration",
+    "updatedAt": "2026-08-16T05:53:27.624Z",
+    "createdAt": "2026-08-16T05:53:27.624Z",
+    "unsubscribedAt": "2026-08-16T05:53:27.627Z"
+  }
+]

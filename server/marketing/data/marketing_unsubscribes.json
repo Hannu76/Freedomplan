@@ -1,0 +1,62 @@
+[
+  {
+    "email": "john_new_user@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:07:46.031Z",
+    "ip": ""
+  },
+  {
+    "email": "live_test_creator@example.com",
+    "reason": "Live API test",
+    "unsubscribedAt": "2026-08-16T05:09:37.453Z",
+    "ip": "::1"
+  },
+  {
+    "email": "unsub_test_1786857920632@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:25:20.636Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786858190492@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:29:50.497Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786858215373@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:30:15.377Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786858238413@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:30:38.416Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786858500389@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:35:00.392Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786858544680@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:35:44.683Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786858876336@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:41:16.339Z",
+    "ip": ""
+  },
+  {
+    "email": "unsub_test_1786859607622@example.com",
+    "reason": "Automated test unsubscribe",
+    "unsubscribedAt": "2026-08-16T05:53:27.627Z",
+    "ip": ""
+  }
+]

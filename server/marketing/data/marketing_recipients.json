@@ -1,0 +1,560 @@
+[
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:07:46.055Z",
+    "error": null,
+    "messageId": "sim_1786856866054_f3it0m"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:24:50.408Z",
+    "error": null,
+    "messageId": "<65496fd6-5135-efcd-9324-62f9df843078@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:25:27.362Z",
+    "error": null,
+    "messageId": "<7cbaa6bc-5a8f-5e82-7514-d6879eeab602@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:25:33.584Z",
+    "error": null,
+    "messageId": "<ad0a1f8e-eb67-f707-4fd1-e04cbf09a621@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:29:58.099Z",
+    "error": null,
+    "messageId": "<7c00eba8-3ae4-0c22-3d94-b710747a5246@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:05.205Z",
+    "error": null,
+    "messageId": "<85810a13-85f6-e839-1b6f-4b815a153614@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:10.999Z",
+    "error": null,
+    "messageId": "<cde7a033-b11c-4a1a-c19f-e0444adbaa56@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:20.786Z",
+    "error": null,
+    "messageId": "<a8867440-dffb-f479-9358-14914d5098a4@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:26.382Z",
+    "error": null,
+    "messageId": "<cbc478a7-2f2b-5c97-1723-215230540010@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:33.243Z",
+    "error": null,
+    "messageId": "<f270de53-ee0d-2af9-32c0-e4828a00e3cb@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858215314@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858215314@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:38.893Z",
+    "error": null,
+    "messageId": "<9085429e-23f4-f0d6-bc01-7c060cd83063@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:44.913Z",
+    "error": null,
+    "messageId": "<ef8e294c-6622-eea7-68eb-5455d9b263c3@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:50.959Z",
+    "error": null,
+    "messageId": "<df4b87b2-4e56-0ad9-c30d-19efd63bf907@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:30:56.497Z",
+    "error": null,
+    "messageId": "<e85067d2-e04a-c69b-b3c6-2ee5fd1345c4@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858215314@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858215314@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:31:02.611Z",
+    "error": null,
+    "messageId": "<ad2c3cea-5723-3bde-ec60-9ead2dd680ae@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858238351@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858238351@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:31:08.438Z",
+    "error": null,
+    "messageId": "<fca8ba2f-16a7-e719-3df0-f6efdddd91b4@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:07.404Z",
+    "error": null,
+    "messageId": "<ce201c4f-15ba-2483-561f-3df48ad7a6a2@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:13.374Z",
+    "error": null,
+    "messageId": "<253ff75d-bc59-a4cf-7ac8-815a5fdc5f34@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:19.265Z",
+    "error": null,
+    "messageId": "<219ee5a8-3ccb-2435-c4a0-df0927aa8d74@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858215314@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858215314@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:25.378Z",
+    "error": null,
+    "messageId": "<311425f6-030d-d4a2-b726-0807da4ba033@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858238351@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858238351@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:31.685Z",
+    "error": null,
+    "messageId": "<301fe326-3800-3209-7eb1-fdcb842158ee@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858500317@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858500317@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:37.448Z",
+    "error": null,
+    "messageId": "<e32ebc33-ac9a-e577-5290-9ddb2248e5e4@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:51.789Z",
+    "error": null,
+    "messageId": "<0d807d7d-ac2a-fc1c-c6ac-f039cffd9882@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:35:57.907Z",
+    "error": null,
+    "messageId": "<1a022cd5-d435-fef3-15c2-7d6752dea256@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:36:03.829Z",
+    "error": null,
+    "messageId": "<9232fdfc-be7f-58e2-c11e-4cedc574544b@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858215314@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858215314@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:36:10.549Z",
+    "error": null,
+    "messageId": "<b149f730-044c-3f11-c352-9dc2eb76d542@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858238351@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858238351@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:36:17.086Z",
+    "error": null,
+    "messageId": "<5ace7c1b-9e64-f641-8cfa-f73fad51fc04@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858500317@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858500317@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:36:23.385Z",
+    "error": null,
+    "messageId": "<2e148f47-2393-241f-c2a7-302881b6c94d@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858544621@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858544621@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:36:29.186Z",
+    "error": null,
+    "messageId": "<07fc37c4-d825-73c4-a7fb-33a38c967be9@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:22.985Z",
+    "error": null,
+    "messageId": "<94cf790c-8cea-56c5-7465-b506511d8f47@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:29.103Z",
+    "error": null,
+    "messageId": "<2f795d64-0d5f-e189-808a-03ab0aab99ac@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:34.611Z",
+    "error": null,
+    "messageId": "<83c2dfe4-e668-0dbc-01f8-425c9c54dbc9@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858215314@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858215314@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:40.583Z",
+    "error": null,
+    "messageId": "<4626f49f-410e-3f7b-4b1b-2f0106768fb0@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858238351@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858238351@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:46.396Z",
+    "error": null,
+    "messageId": "<1311d1ab-af70-d42a-87b1-5e18cca3d83f@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858500317@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858500317@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:52.182Z",
+    "error": null,
+    "messageId": "<7d8ba5a6-cdde-a187-04dc-5c8809df99d3@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858544621@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858544621@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:41:58.811Z",
+    "error": null,
+    "messageId": "<ee2798e9-1da3-a8a6-caee-e605925c8ed9@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858876263@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858876263@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:42:05.207Z",
+    "error": null,
+    "messageId": "<c92bf844-9710-0563-c3df-1ccb9d834c11@freedomplan.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_naveedmd78600@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "naveedmd78600@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:52:25.589Z",
+    "error": null,
+    "messageId": "<97451dd6-a996-b209-bc57-3860d91b10dc@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_hannu786464@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "hannu786464@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:52:34.021Z",
+    "error": null,
+    "messageId": "<2c72aa0a-c003-4341-e7e5-16604694db21@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_jashujaswanth050@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "jashujaswanth050@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:52:41.866Z",
+    "error": null,
+    "messageId": "<31003d01-ad5b-19e9-d437-4de67cf665e0@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_hannu464@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "hannu464@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:52:49.475Z",
+    "error": null,
+    "messageId": "<8a28a0ea-6245-9f9a-ffab-1ab2b3dd51f3@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_hannu4@outlook.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "hannu4@outlook.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:52:56.964Z",
+    "error": null,
+    "messageId": "<e4286795-9729-f92d-ba7b-1cf7f81bf2d0@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_renuka.yam.b19@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "renuka.yam.b19@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:04.855Z",
+    "error": null,
+    "messageId": "<4d6d137e-9c6b-c52d-8ad4-4b01f13f79d9@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_naveedmd00@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "naveedmd00@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:12.968Z",
+    "error": null,
+    "messageId": "<a2c504e8-2a69-42d3-194f-6045098f663f@gmail.com>"
+  },
+  {
+    "id": "wave-1-launch-2026-08-16_anasurrahmansheik@gmail.com",
+    "campaignId": "wave-1-launch-2026-08-16",
+    "email": "anasurrahmansheik@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:21.019Z",
+    "error": null,
+    "messageId": "<0bc533cd-28cb-cc97-6694-e7e98f10870f@gmail.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_free_creator@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "free_creator@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:34.647Z",
+    "error": null,
+    "messageId": "<20dbd80a-f37f-ff79-73d7-597760192987@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786857920574@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786857920574@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:41.335Z",
+    "error": null,
+    "messageId": "<eddcbae7-9bd7-e2a1-de51-7fd7cb9cf091@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858190421@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858190421@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:47.850Z",
+    "error": null,
+    "messageId": "<1b7feab3-f21f-15b3-1891-2bece0fbe941@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858215314@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858215314@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:53:53.936Z",
+    "error": null,
+    "messageId": "<83c3f34a-a628-31a0-abd6-a21303121c45@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858238351@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858238351@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:00.224Z",
+    "error": null,
+    "messageId": "<4c412b05-0dc2-0d90-bbb3-115069dd9b7f@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858500317@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858500317@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:06.368Z",
+    "error": null,
+    "messageId": "<a63f3d11-1a43-4ce4-000b-abf320ab6833@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858544621@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858544621@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:12.854Z",
+    "error": null,
+    "messageId": "<b3c8fbbf-1b3d-8621-363e-d86a97835ea7@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786858876263@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786858876263@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:18.676Z",
+    "error": null,
+    "messageId": "<857e8253-00bd-88e5-8156-92f275b48de7@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_naveedmd78600@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "naveedmd78600@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:25.961Z",
+    "error": null,
+    "messageId": "<5f3e40b2-8f85-0729-13bf-1566a4fd655e@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_hannu786464@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "hannu786464@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:31.756Z",
+    "error": null,
+    "messageId": "<617456a7-2c3f-7082-2f67-aec7f4d0804b@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_jashujaswanth050@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "jashujaswanth050@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:37.261Z",
+    "error": null,
+    "messageId": "<c0421ab3-4615-db36-e009-f8fddaaf5bc6@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_hannu464@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "hannu464@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:44.033Z",
+    "error": null,
+    "messageId": "<2cd1f2e8-a841-81fe-949e-191361d4def4@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_hannu4@outlook.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "hannu4@outlook.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:49.605Z",
+    "error": null,
+    "messageId": "<b755200e-b3ac-7f21-ff64-7e86db097e45@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_renuka.yam.b19@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "renuka.yam.b19@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:54:55.905Z",
+    "error": null,
+    "messageId": "<8effeae3-ad71-6b49-fe66-64ab785a3204@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_naveedmd00@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "naveedmd00@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:55:01.487Z",
+    "error": null,
+    "messageId": "<70c34b81-25f1-abf3-63ad-6503b9a7a888@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_anasurrahmansheik@gmail.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "anasurrahmansheik@gmail.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:55:06.996Z",
+    "error": null,
+    "messageId": "<40ab405c-1e85-41e5-a48a-7321d6cc78f2@freedomplan.com>"
+  },
+  {
+    "id": "2026-08-16-weekly-promotion_john_new_1786859607547@example.com",
+    "campaignId": "2026-08-16-weekly-promotion",
+    "email": "john_new_1786859607547@example.com",
+    "status": "sent",
+    "sentAt": "2026-08-16T05:55:12.887Z",
+    "error": null,
+    "messageId": "<bb287a62-7ae0-50e9-b9ee-042b5351bda9@freedomplan.com>"
+  }
+]
