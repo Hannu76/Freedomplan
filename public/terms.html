@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0B1E33" />
+  <title>Terms of Service | FreedomPlan</title>
+  <meta name="description" content="FreedomPlan Terms of Service — terms and conditions governing the use of FreedomPlan tools, calculators, and educational resources." />
+  <link rel="canonical" href="https://freedom-plan.app/terms.html" />
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #0034DE;
+      --primary-dark: #002299;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --text-dark: #0F172A;
+      --bg-page: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --border-color: #E2E8F0;
+      --highlight-bg: #EFF6FF;
+      --highlight-border: #BFDBFE;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .logo span {
+      color: #6366F1;
+    }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--highlight-bg);
+      color: var(--primary);
+      border: 1px solid var(--highlight-border);
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    main {
+      max-width: 860px;
+      margin: 40px auto 80px;
+      padding: 0 24px;
+    }
+    .article-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+    @media (max-width: 640px) {
+      .article-card {
+        padding: 28px 20px;
+        border-radius: 14px;
+      }
+      main {
+        margin: 20px auto 40px;
+      }
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #EFF6FF;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.8px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .meta-date {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+    .intro-block {
+      background: #F8FAFC;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+    }
+    .intro-block p {
+      margin-bottom: 10px;
+      color: #334155;
+    }
+    .intro-block p:last-child {
+      margin-bottom: 0;
+    }
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: -0.3px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      padding-top: 18px;
+      border-top: 1px solid #F1F5F9;
+    }
+    h2:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+    p {
+      margin-bottom: 14px;
+      color: #334155;
+    }
+    ul {
+      margin: 10px 0 16px 24px;
+    }
+    li {
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    .disclaimer-callout {
+      background: #FFFBEB;
+      border-left: 4px solid #F59E0B;
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+    .disclaimer-callout p {
+      color: #92400E;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+    .contact-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+    .contact-box p {
+      margin-bottom: 6px;
+    }
+    .contact-box p:last-child {
+      margin-bottom: 0;
+    }
+    footer {
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-card);
+      padding: 36px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .footer-links a {
+      color: var(--text-dark);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="/" class="logo">Freedom<span>Plan</span></a>
+      <div class="nav-links">
+        <a href="/about.html">About Us</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html" class="active">Terms of Service</a>
+        <a href="/" class="btn-back">← Back to App</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article class="article-card">
+      <span class="badge">Legal Terms</span>
+      <h1>Terms of Service</h1>
+      <p class="meta-date">Last Updated: August 2026</p>
+
+      <div class="intro-block">
+        <p><strong>Welcome to FreedomPlan.</strong></p>
+        <p>These Terms of Service ("Terms") govern your access to and use of the FreedomPlan website, applications, tools, content, reports, and related services.</p>
+        <p>By accessing or using FreedomPlan, you agree to these Terms. If you do not agree with these Terms, please do not use the service.</p>
+      </div>
+
+      <h2>1. About FreedomPlan</h2>
+      <p>FreedomPlan is a digital financial-planning and educational platform designed primarily for students preparing to study abroad or students already studying abroad.</p>
+      <p>FreedomPlan provides tools and information intended to help users organise expenses, explore savings scenarios, understand repayment possibilities, and plan their finances.</p>
+      <div class="disclaimer-callout">
+        <p>FreedomPlan is not a bank, lender, university, education consultancy, investment firm, financial institution, or regulated financial adviser.</p>
+      </div>
+
+      <h2>2. Eligibility</h2>
+      <p>You must provide accurate information when creating an account or using features that require account information.</p>
+      <p>You are responsible for maintaining the confidentiality of your account credentials.</p>
+      <p>You are responsible for activity performed through your account unless the activity occurred without your authorisation and was not caused by your failure to protect your credentials.</p>
+
+      <h2>3. Free Features</h2>
+      <p>FreedomPlan may provide certain features without payment.</p>
+      <p>Free features may include basic financial planning tools, educational information, calculators, or limited dashboard functionality.</p>
+      <p>FreedomPlan may change, add, remove, or modify free features over time.</p>
+
+      <h2>4. Premium Features</h2>
+      <p>Certain features may require a paid plan. Premium features may include, depending on the plan offered:</p>
+      <ul>
+        <li>Advanced financial dashboards</li>
+        <li>Savings planning</li>
+        <li>Currency tools</li>
+        <li>Repayment schedules</li>
+        <li>Financial reports</li>
+        <li>Advanced budgeting</li>
+        <li>Additional planning functionality</li>
+        <li>Secure account or cloud features</li>
+      </ul>
+      <p>The exact features included in a plan will be displayed at the time of purchase.</p>
+
+      <h2>5. Pricing</h2>
+      <p>The applicable price will be displayed before you complete a purchase.</p>
+      <p>Unless expressly stated otherwise, a purchase is for the specific plan and access period described during checkout.</p>
+      <p>Prices may change for future purchases. A promotional price does not necessarily guarantee the same price for future purchases.</p>
+
+      <h2>6. Payments</h2>
+      <p>Payments may be processed through third-party payment providers such as Razorpay.</p>
+      <p>By completing a purchase, you authorise the applicable payment provider to process the transaction according to the payment information and instructions you provide during checkout.</p>
+      <p>FreedomPlan does not request your UPI PIN, card PIN, banking password, or other confidential payment credentials.</p>
+
+      <h2>7. Premium Access</h2>
+      <p>Premium access is granted only after successful payment verification.</p>
+      <p>A successful payment shown by a payment interface does not by itself override FreedomPlan's server-side verification process.</p>
+      <p>FreedomPlan may temporarily delay or deny access if a payment cannot be verified, is reversed, is disputed, is identified as fraudulent, or otherwise fails the applicable payment verification process.</p>
+
+      <h2>8. Account and Premium Ownership</h2>
+      <p>Premium access is associated with the user account or purchase information used during the applicable purchase and verification process.</p>
+      <p>You may not share, resell, transfer, sublicense, or commercially redistribute premium access unless FreedomPlan expressly permits this.</p>
+
+      <h2>9. Financial Information and Calculations</h2>
+      <p>FreedomPlan provides planning tools and calculations based on information entered by the user and assumptions used by the relevant tool.</p>
+      <p>Calculations are intended to help users understand possible financial scenarios. They are not guarantees of future expenses, loan interest, currency rates, income, savings, investment returns, repayment amounts, or other financial outcomes. Actual amounts may differ.</p>
+      <p>You should verify important information with the relevant bank, lender, university, government authority, or qualified professional.</p>
+
+      <h2>10. No Financial Advice</h2>
+      <p>Nothing on FreedomPlan should be interpreted as personalised financial, investment, tax, legal, immigration, lending, or professional advice.</p>
+      <p>FreedomPlan does not determine whether a particular loan, university, country, financial product, or repayment strategy is suitable for you. You remain responsible for your financial decisions.</p>
+
+      <h2>11. Educational Content</h2>
+      <p>FreedomPlan may publish educational material relating to budgeting, savings, education loans, expenses, currency conversion, studying abroad, and financial planning.</p>
+      <p>Information may become outdated. Users should verify time-sensitive information with official sources before relying on it for important decisions.</p>
+
+      <h2>12. Reports and Downloads</h2>
+      <p>Where FreedomPlan allows users to generate or download reports, those reports are generated from the information and assumptions available through the platform.</p>
+      <p>You are responsible for reviewing the information in a report before using it for financial or personal decisions.</p>
+
+      <h2>13. Acceptable Use</h2>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Use FreedomPlan for unlawful purposes</li>
+        <li>Attempt to gain unauthorised access to accounts or systems</li>
+        <li>Circumvent premium access controls</li>
+        <li>Manipulate payment verification</li>
+        <li>Reverse engineer the platform where prohibited by law</li>
+        <li>Copy or redistribute protected content without permission</li>
+        <li>Abuse automated requests or attempt to disrupt the service</li>
+        <li>Upload malicious software or harmful content</li>
+        <li>Impersonate another person or organisation</li>
+      </ul>
+
+      <h2>14. Intellectual Property</h2>
+      <p>FreedomPlan and its original content, branding, design, software, text, graphics, tools, reports, and other materials are owned by or licensed to FreedomPlan unless otherwise stated.</p>
+      <p>You may use the platform for its intended personal purposes. You may not reproduce, redistribute, sell, modify, or commercially exploit FreedomPlan's protected materials without permission, except where permitted by law.</p>
+
+      <h2>15. Third-Party Services</h2>
+      <p>FreedomPlan may integrate with third-party services, including payment, hosting, authentication, analytics, storage, or other technology providers.</p>
+      <p>Third-party services may have their own terms and privacy policies. FreedomPlan is not responsible for independent third-party services outside its control.</p>
+
+      <h2>16. Service Availability</h2>
+      <p>We aim to keep FreedomPlan available and reliable. However, we do not guarantee uninterrupted access.</p>
+      <p>The service may occasionally be unavailable because of maintenance, updates, technical failures, security events, third-party service interruptions, or circumstances outside our reasonable control.</p>
+
+      <h2>17. Changes to the Service</h2>
+      <p>FreedomPlan may modify, improve, suspend, or discontinue features or parts of the service. Where reasonably appropriate, we may provide notice of material changes.</p>
+
+      <h2>18. Refunds and Cancellations</h2>
+      <p>Any refund or cancellation rights applicable to your purchase will be presented through the applicable purchase terms and refund policy.</p>
+      <p>Where a refund is requested, we may require transaction or account information necessary to identify and process the request.</p>
+      <p>Nothing in these Terms removes consumer rights that cannot legally be excluded.</p>
+
+      <h2>19. Account Suspension or Termination</h2>
+      <p>FreedomPlan may suspend or terminate access where reasonably necessary because of:</p>
+      <ul>
+        <li>Fraudulent activity</li>
+        <li>Payment abuse</li>
+        <li>Security risks</li>
+        <li>Serious violation of these Terms</li>
+        <li>Illegal activity</li>
+        <li>Attempts to bypass access controls</li>
+        <li>Other conduct that materially harms the service or its users</li>
+      </ul>
+      <p>Where required by applicable law, appropriate notice or process will be provided.</p>
+
+      <h2>20. Disclaimer</h2>
+      <p>FreedomPlan is provided for educational and planning purposes. To the extent permitted by applicable law, FreedomPlan does not guarantee that:</p>
+      <ul>
+        <li>Financial calculations will always be error-free</li>
+        <li>Estimates will match actual costs</li>
+        <li>Currency rates will remain unchanged</li>
+        <li>Loan terms will remain unchanged</li>
+        <li>Information will always be current</li>
+        <li>The service will always be available</li>
+        <li>Using the platform will produce a particular financial result</li>
+      </ul>
+      <p>You should independently verify important financial information before making significant decisions.</p>
+
+      <h2>21. Limitation of Liability</h2>
+      <p>To the extent permitted by applicable law, FreedomPlan will not be responsible for losses arising from decisions made solely on the basis of estimates, calculations, projections, or educational information provided through the platform.</p>
+      <p>Nothing in these Terms excludes or limits liability where such exclusion or limitation is prohibited by applicable law.</p>
+
+      <h2>22. Privacy</h2>
+      <p>Your use of FreedomPlan is also subject to our <a href="/privacy.html" style="color: var(--primary); font-weight: 600; text-decoration: none;">Privacy Policy</a>. The Privacy Policy explains how we collect, use, protect, and handle personal information.</p>
+
+      <h2>23. Governing Law</h2>
+      <p>These Terms will be governed by the laws applicable to the legal entity operating FreedomPlan, subject to any mandatory consumer-protection rights that apply to you under the laws of your jurisdiction.</p>
+      <div class="contact-box">
+        <p><strong>Legal Entity:</strong> FreedomPlan</p>
+      </div>
+
+      <h2>24. Contact</h2>
+      <p>For questions about these Terms, contact:</p>
+      <div class="contact-box">
+        <p><strong>FreedomPlan</strong></p>
+        <p><strong>Email:</strong> <a href="mailto:freedomplan786@gmail.com" style="color: var(--primary); text-decoration: none;">freedomplan786@gmail.com</a></p>
+        <p><strong>Legal/Business Name:</strong> FreedomPlan</p>
+      </div>
+
+      <h2>25. Acceptance</h2>
+      <p>By using FreedomPlan, creating an account, or purchasing a paid plan, you acknowledge that you have read and understood these Terms and agree to be bound by them to the extent permitted by applicable law.</p>
+      <p style="font-weight: 700; color: #0F172A; margin-top: 24px;">FreedomPlan — Plan before you arrive. Manage with confidence.</p>
+    </article>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="/about.html" target="_blank" rel="noopener noreferrer">About Us</a>
+      <span>·</span>
+      <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+      <span>·</span>
+      <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+    </div>
+    <p>© 2026 FreedomPlan. All rights reserved. Built to help students plan with greater clarity and confidence.</p>
+    <p style="margin-top: 6px; font-size: 12px;">Contact: <a href="mailto:freedomplan786@gmail.com" style="color: var(--primary); text-decoration: none;">freedomplan786@gmail.com</a></p>
+  </footer>
+
+</body>
+</html>
