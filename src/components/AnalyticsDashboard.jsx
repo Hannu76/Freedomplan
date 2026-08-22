@@ -1,0 +1,1763 @@
+import React, { useState, useEffect, useMemo } from 'react'
+import { useStore } from '../context/StoreContext'
+import { PLAN, LOAN, CURRENCY } from '../config'
+import { Card, Badge, StatTile, AnimatedCounter, MINT_TEXT_URL } from './ui.jsx'
+import FlywayModal from './FlywayModal'
+import { triggerReportDownload, triggerRepaymentPDFReport, triggerDashboardPDFReport, calculateDynamicSchedule } from '../utils/reportDownloader'
+import AnimatedDownloadButton from './AnimatedDownloadButton'
+import { playClickSound, playThrottledClickSound } from '../utils/sound'
+import { IMAGES } from '../utils/images'
+import LikeButton from './LikeButton'
+import './SubscribeForm.css'
+
+const TypewriterText = ({ text }) => {
+  const [displayedText, setDisplayedText] = React.useState('');
+
+  React.useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setDisplayedText(text.slice(0, index + 1));
+      index++;
+      if (index >= text.length) clearInterval(interval);
+    }, 40); // typing speed
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return (
+    <div className="font-mono text-[13px] text-neutral-300 p-4 border border-lime-500/10 rounded-[16px] bg-neutral-950/60 shadow-inner flex items-center leading-relaxed">
+      <span className="text-lime-400 font-bold mr-3 text-lg leading-none">❯</span>
+      <span>{displayedText}</span>
+      <span className="inline-block w-1.5 h-4 bg-lime-400 ml-1 animate-[pulse_0.8s_ease-in-out_infinite] align-middle rounded-sm"></span>
+    </div>
+  );
+};
+
+export const FINANCIAL_CATEGORY_THEME = {
+  rent: {
+    key: 'rent',
+    label: 'Rent',
+    stroke: '#F43F5E',
+    color: 'bg-rose-500',
+  },
+  savings: {
+    key: 'savings',
+    label: 'Target Savings',
+    stroke: '#84CC16',
+    color: 'bg-lime-500',
+  },
+  expenses: {
+    key: 'expenses',
+    label: 'Bills & Utilities',
+    stroke: '#F59E0B',
+    color: 'bg-amber-500',
+  },
+  buffer: {
+    key: 'buffer',
+    label: 'Buffer & Discretionary',
+    stroke: '#3B82F6',
+    color: 'bg-blue-500',
+  },
+};
+
+export default function AnalyticsDashboard({ onRequirePro, onRequireLogin, onTriggerWhatsApp }) {
+  const {
+    timeline, entries, rate, setRate, derived, customPlan, basicLoan, setBasicLoan, isProUnlocked, isBasicUnlocked,
+    interestRate, setInterestRate, moratoriumMonths, setMoratoriumMonths,
+    coApplicantContribution, setCoApplicantContribution, hasCoApplicant, setHasCoApplicant,
+    isLoggedIn, setIsLoggedIn, sessionDownloadCount, setSessionDownloadCount,
+    isAnalyticsLocked, setIsAnalyticsLocked, isSessionActive, touchSession
+  } = useStore()
+
+  const { targetYearlyLumpSumINR, targetMonthlySavingsGBP } = derived
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0)
+  const [activeYearFilter, setActiveYearFilter] = useState('All')
+  const [hoveredSlice, setHoveredSlice] = useState(null)
+  const [selectedSlice, setSelectedSlice] = useState(0)
+  const [simulatorYears, setSimulatorYears] = useState(10) // Default to 10 years like standard repayment
+  const [simRate, setSimRate] = useState(rate) // Local state for Rate Simulator
+  const [isFlywayModalOpen, setIsFlywayModalOpen] = useState(false)
+  const [isVoting, setIsVoting] = useState(false)
+  const [hasVoted, setHasVoted] = useState(false)
+  const [isGreenCardFlipped, setIsGreenCardFlipped] = useState(false)
+  const [subscribeEmail, setSubscribeEmail] = useState('')
+  const [subscribeStatus, setSubscribeStatus] = useState(null) // null, 'success', 'error'
+
+  const [tempBasicLoan, setTempBasicLoan] = useState(basicLoan)
+  const [tempInterestRate, setTempInterestRate] = useState(interestRate)
+  const [tempMoratoriumMonths, setTempMoratoriumMonths] = useState(moratoriumMonths)
+  const [showSavedNotification, setShowSavedNotification] = useState(false)
+
+  // 3.2-Second Slow Smooth Wave Rise Animation Timer for Cumulative Paydown Curve Bar Chart
+  const [barPulse, setBarPulse] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBarPulse((prev) => prev + 1)
+    }, 3200)
+    return () => clearInterval(timer)
+  }, [])
+
+  React.useEffect(() => {
+    setTempBasicLoan(basicLoan)
+    setTempInterestRate(interestRate)
+    setTempMoratoriumMonths(moratoriumMonths)
+  }, [basicLoan, interestRate, moratoriumMonths])
+
+  const handleSaveAnalytics = () => {
+    setBasicLoan(tempBasicLoan)
+    setInterestRate(tempInterestRate)
+    setMoratoriumMonths(tempMoratoriumMonths)
+    setIsAnalyticsLocked(true)
+    setShowSavedNotification(true)
+    setTimeout(() => setShowSavedNotification(false), 4000)
+  }
+
+  const handleResetAnalytics = () => {
+    setIsAnalyticsLocked(false)
+    setShowSavedNotification(false)
+  }
+
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleSubscribe = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(subscribeEmail)) {
+      setIsSubscribing(true);
+      try {
+        await fetch("https://formsubmit.co/ajax/freedomplan786@gmail.com", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: "New Freedom Plan Subscriber!",
+            email: subscribeEmail,
+            message: `A new user wants to get in touch: ${subscribeEmail}`
+          })
+        });
+        setSubscribeStatus('success');
+      } catch (error) {
+        console.error('Subscription error:', error);
+        setSubscribeStatus('error');
+      }
+      setIsSubscribing(false);
+      setTimeout(() => setSubscribeStatus(null), 4000);
+      setSubscribeEmail('');
+    } else {
+      setSubscribeStatus('error');
+      setTimeout(() => setSubscribeStatus(null), 3000);
+    }
+  }
+
+  const handlePollVote = async () => {
+    setIsVoting(true);
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbwK8959N1rGAZgyNMLJk-McUt95rDZfQ4s8U_IM7mYwS1talcaltSv8abxYAr-8MqVTTQ/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: "PollVote",
+          timestamp: new Date().toISOString()
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    setTimeout(() => {
+      setIsVoting(false);
+      setHasVoted(true);
+    }, 800);
+  };
+
+  // 1. Build data for Net Worth Growth vs. Debt Paydown Curve
+  const chartData = useMemo(() => {
+    let runningSavingsGBP = 0
+    let runningLoanINR = basicLoan
+
+    const all = timeline.map((m, idx) => {
+      const savedThisMonth = entries[m.key]?.saved || 0
+      runningSavingsGBP += savedThisMonth
+
+      const isDecember = m.month === 11
+      const principalPaidThisMonth = entries[m.key]?.repaidPrincipal || 0
+      if (principalPaidThisMonth > 0) {
+        runningLoanINR = Math.max(0, runningLoanINR - principalPaidThisMonth)
+      }
+      if (isDecember && runningLoanINR > 0 && entries[m.key]?.lumpSum) {
+        const lump = Math.min(entries[m.key].lumpSum, runningLoanINR)
+        runningLoanINR = Math.max(0, runningLoanINR - lump)
+      }
+
+      const savingsInINR = runningSavingsGBP * rate
+      const netWorthINR = savingsInINR - runningLoanINR
+
+      return {
+        ...m,
+        idx,
+        savingsGBP: runningSavingsGBP,
+        savingsINR: savingsInINR,
+        loanINR: runningLoanINR,
+        netWorthINR,
+      }
+    })
+
+    if (activeYearFilter === 'All') return all
+    return all.filter(d => String(d.year) === activeYearFilter)
+  }, [timeline, entries, rate, activeYearFilter, basicLoan])
+
+  const selectedData = chartData[selectedMonthIndex] || chartData[0] || {}
+  const { strategyChecks, setStrategyChecks } = useStore()
+
+  // Chart dimensions & scaling for Net Worth vs Loan SVG
+  const svgWidth = 640
+  const svgHeight = 240
+  const paddingX = 40
+  const paddingY = 24
+  const chartW = svgWidth - paddingX * 2
+  const chartH = svgHeight - paddingY * 2
+
+  const maxINR = Math.max(
+    basicLoan,
+    ...chartData.map((d) => Math.max(d.savingsINR || 0, d.loanINR || 0))
+  )
+
+  // SVG coordinate helpers
+  const getX = (idx) => paddingX + (idx / (Math.max(1, chartData.length - 1))) * chartW
+  const getY = (val) => paddingY + chartH - ((val || 0) / (maxINR || 1)) * chartH
+
+  // Build path strings
+  const loanPoints = chartData.map((d, i) => `${getX(i)},${getY(d.loanINR)}`).join(' ')
+  const savingsPoints = chartData.map((d, i) => `${getX(i)},${getY(d.savingsINR)}`).join(' ')
+
+  const loanAreaPath = `M ${paddingX},${paddingY + chartH} L ${loanPoints
+    .split(' ')
+    .join(' L ')} L ${getX(chartData.length - 1)},${paddingY + chartH} Z`
+  const savingsAreaPath = `M ${paddingX},${paddingY + chartH} L ${savingsPoints
+    .split(' ')
+    .join(' L ')} L ${getX(chartData.length - 1)},${paddingY + chartH} Z`
+
+  // 2. Cash Flow Breakdown computation with Authoritative Categories
+  const currentIncome = customPlan.monthlyIncome || PLAN.monthlyIncome || 900
+  const rentAvg = customPlan.rentMid || ((PLAN.expenses.rent.min + PLAN.expenses.rent.max) / 2)
+  const billsTravel = (customPlan.bills || PLAN.expenses.bills) + (customPlan.travel || PLAN.expenses.travel) + (customPlan.food || PLAN.expenses.food)
+  const savingsTarget = customPlan.monthlySavingsTarget || PLAN.monthlySavingsTarget
+  const surplus = Math.max(0, currentIncome - rentAvg - billsTravel - savingsTarget)
+
+  const cashFlowSlices = [
+    { key: 'rent', label: FINANCIAL_CATEGORY_THEME.rent.label, amount: rentAvg, color: FINANCIAL_CATEGORY_THEME.rent.color, stroke: FINANCIAL_CATEGORY_THEME.rent.stroke, pct: (rentAvg / currentIncome) * 100 },
+    { key: 'savings', label: FINANCIAL_CATEGORY_THEME.savings.label, amount: savingsTarget, color: FINANCIAL_CATEGORY_THEME.savings.color, stroke: FINANCIAL_CATEGORY_THEME.savings.stroke, pct: (savingsTarget / currentIncome) * 100 },
+    { key: 'expenses', label: FINANCIAL_CATEGORY_THEME.expenses.label, amount: billsTravel, color: FINANCIAL_CATEGORY_THEME.expenses.color, stroke: FINANCIAL_CATEGORY_THEME.expenses.stroke, pct: (billsTravel / currentIncome) * 100 },
+    { key: 'buffer', label: FINANCIAL_CATEGORY_THEME.buffer.label, amount: surplus, color: FINANCIAL_CATEGORY_THEME.buffer.color, stroke: FINANCIAL_CATEGORY_THEME.buffer.stroke, pct: (surplus / currentIncome) * 100 },
+  ]
+
+  // 3. Exchange Rate Sensitivity table/chart
+  const rateScenarios = [120, 125, CURRENCY.defaultRate, 130, 135, 140]
+
+  // ── Shared report footer (AI prompts + disclaimer) ─────────────────────────
+  const sharedReportFooter = `
+---
+
+## Understanding This Report
+
+This report was generated automatically from the financial information you entered into Freedom Plan™. Think of it as a starting point — a structured snapshot of where you stand today and what it will take to reach debt freedom.
+
+Numbers are recalculated every time you update your profile, so generate a fresh copy whenever your situation changes.
+
+---
+
+## Want Personalised Advice?
+
+Upload this report into Gemini or Perplexity and ask:
+
+- How can I reduce my loan faster given these numbers?
+- Is my yearly prepayment target optimally sized?
+- Should I increase my annual prepayment, and by how much?
+- How much more interest can I save with an extra £100 per month?
+- Based on this plan, can I realistically become debt-free earlier?
+
+---
+
+> **Disclaimer:** This report is generated automatically using the financial information you provided. It is designed to support budgeting, repayment planning, and financial organisation. It does not constitute regulated financial, legal, tax, or investment advice. Actual outcomes will depend on your lender's terms, applicable interest rates, exchange rate movements, and your personal financial circumstances.
+`;
+
+  const isLocalhost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === '[::1]'
+  )
+
+  const store = useStore()
+
+  const handleDownloadDashboard = () => {
+    try {
+      console.log('[STEP 1] Dashboard download button clicked — PASS')
+      touchSession()
+      try { playClickSound() } catch (e) { }
+
+      console.log('[STEP 2] handleDownloadDashboard() executed — PASS')
+
+      console.log('[STEP 3] Dashboard state loaded:', store)
+      if (!store) {
+        throw new Error('STEP 3 FAILED: Dashboard state (store) is null or undefined')
+      }
+      console.log('[STEP 3] Dashboard state loaded — PASS')
+
+      triggerRepaymentPDFReport(store)
+    } catch (error) {
+      console.error('====================================================')
+      console.error('[CRITICAL FAILURE] Dashboard Download Failed at Step!')
+      console.error('Error Message:', error.message)
+      console.error('Full Stack Trace:', error.stack)
+      console.error('====================================================')
+      alert('Dashboard Download Failed: ' + error.message)
+    }
+  }
+
+  // ── 3-Year Repayment Strategy Download Report ────────────────────────────────
+  const handleDownloadYearlyReport = () => {
+    touchSession()
+    triggerRepaymentPDFReport(store)
+  }
+
+
+
+  return (
+    <div className="space-y-6 animate-slide-up">
+
+
+
+      {/* Header Stat Tiles */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <StatTile
+          label="Total Savings (Equivalent)"
+          value={<AnimatedCounter prefix="₹" value={Math.round(derived.savedAllTime * rate)} />}
+          sub={`£${derived.savedAllTime.toLocaleString('en-GB')} at ₹${rate}/£`}
+          accent="text-[#93E33C]"
+          badge="Growth"
+        />
+        <StatTile
+          label="Current Loan Balance"
+          value={<AnimatedCounter prefix="₹" value={Math.round(selectedData.loanINR !== undefined ? selectedData.loanINR : basicLoan)} />}
+          sub={`As of ${selectedData.label || 'Start'}`}
+          accent="text-[#ED000C]"
+          badge="Liabilities"
+        />
+        <StatTile
+          label="Projected Net Debt Position"
+          value={<AnimatedCounter prefix="₹" value={Math.abs(selectedData.netWorthINR !== undefined ? selectedData.netWorthINR : (0 - basicLoan))} />}
+          sub={(selectedData.netWorthINR !== undefined ? selectedData.netWorthINR : (0 - basicLoan)) >= 0 ? 'Surplus Net Worth' : 'Remaining Net Debt'}
+          accent={(selectedData.netWorthINR !== undefined ? selectedData.netWorthINR : (0 - basicLoan)) >= 0 ? 'text-[#161C2D]' : 'text-[#ED000C]'}
+          badge={(selectedData.netWorthINR !== undefined ? selectedData.netWorthINR : (0 - basicLoan)) >= 0 ? 'Surplus' : 'Deficit'}
+          isLocked={!isProUnlocked}
+          onUnlock={onRequirePro}
+        />
+      </div>
+
+      {/* Chart 1: Monthly Balance & 3-Year Repayment Visual Dark Card */}
+      <div className="flex justify-center w-full">
+        <div className="group relative w-80 max-w-[320px] overflow-hidden rounded-3xl bg-neutral-950 p-6 font-sans shadow-2xl border border-neutral-800 double-invert">
+          <div className="absolute -top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-lime-500/10 blur-3xl transition-all duration-700 group-hover:bg-lime-500/15" />
+
+          <div className="relative flex flex-col gap-5">
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-neutral-800/80 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-500/10 border border-lime-500/20">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-lime-400"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.75"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                    <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                    <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-bold text-base text-neutral-100 tracking-tight">Monthly Balance</p>
+                  <p className="text-[11px] text-neutral-500">Updated just now</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Two Column Metrics */}
+            {(() => {
+              const income = customPlan.monthlyIncome || PLAN.monthlyIncome || 1200;
+              const rent = customPlan.rentMid || ((PLAN.expenses.rent.min + PLAN.expenses.rent.max) / 2) || 273;
+              const shop = customPlan.shopping || 39;
+              const food = customPlan.food || PLAN.expenses.food || 65;
+              const trans = customPlan.travel || PLAN.expenses.travel || 91;
+              const bills = customPlan.bills || PLAN.expenses.bills || 104;
+              const ent = customPlan.entertainment || 39;
+              const health = customPlan.health || 26;
+              const others = customPlan.otherExpenses || 26;
+
+              const totalCosts = rent + shop + food + trans + bills + ent + health + others;
+              const costsPct = ((totalCosts / income) * 100).toFixed(1);
+
+              const scheduleData = calculateDynamicSchedule(store);
+              const maxVal = Math.max(scheduleData.loanAmount, 1);
+
+              return (
+                <>
+                  <div className="flex divide-x divide-neutral-800">
+                    <div className="flex-1 pr-4">
+                      <p className="text-xs font-medium text-neutral-400">Revenue (Income)</p>
+                      <p className="text-xl sm:text-2xl font-bold text-neutral-100 mt-0.5 tracking-tight figure">
+                        £{Math.round(income).toLocaleString('en-GB')}
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-lime-400">100%</p>
+                    </div>
+                    <div className="flex-1 pl-4">
+                      <p className="text-xs font-medium text-neutral-400">Costs (Utilisation)</p>
+                      <p className="text-xl sm:text-2xl font-bold text-neutral-100 mt-0.5 tracking-tight figure">
+                        £{Math.round(totalCosts).toLocaleString('en-GB')}
+                      </p>
+                      <p className="mt-1 text-xs font-medium text-neutral-400">{costsPct}%</p>
+                    </div>
+                  </div>
+
+                  {/* 3-Year Loan Repayment Visual Bar Chart (NO NUMBERS on website, Visual Teaser Only) */}
+                  <div className="relative flex flex-col gap-2 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-neutral-400">
+                        3-Year Loan Repayment
+                      </span>
+                      <div className="flex items-center gap-2.5 text-[9px] font-bold text-neutral-400">
+                        <div className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-lime-400 shadow-sm" />
+                          <span>Principal</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-neutral-600 shadow-sm" />
+                          <span>Balance</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Visual Bars Container with dashed grid background */}
+                    <div className="relative h-32 w-full flex flex-col justify-between pt-2 group/chart">
+                      {/* Subtle dashed background grid lines */}
+                      <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-5 pt-3 opacity-25">
+                        <div className="border-b border-dashed border-neutral-700 w-full" />
+                        <div className="border-b border-dashed border-neutral-700 w-full" />
+                        <div className="border-b border-dashed border-neutral-700 w-full" />
+                      </div>
+
+                      <div className="relative z-10 flex items-end justify-around gap-2 h-full w-full px-2">
+                        {scheduleData.yrSchedule.map((yr) => {
+                          const repaidHeightPct = Math.max(18, Math.min(100, Math.round((yr.principalRepaid / maxVal) * 90)));
+                          const balanceHeightPct = Math.max(18, Math.min(100, Math.round((yr.closing / maxVal) * 90)));
+
+                          return (
+                            <div key={yr.year} className="flex-1 flex flex-col items-center h-full justify-end group/bar relative">
+                              {/* Dual Bars: Green (Principal Repaid) & Dark/Black (Remaining Balance) — NO NUMBERS */}
+                              <div className="flex items-end justify-center gap-1.5 w-full h-full pb-1">
+                                {/* Principal Repaid Bar (Green) */}
+                                <div
+                                  className="w-3.5 rounded-t-[4px] bg-gradient-to-t from-lime-500/20 via-lime-400 to-lime-300 transition-all duration-500 group-hover/bar:brightness-125 group-hover/bar:shadow-[0_0_10px_rgba(163,230,53,0.5)] origin-bottom"
+                                  style={{ height: `${repaidHeightPct}%` }}
+                                  title="Principal Repaid"
+                                />
+                                {/* Remaining Loan Balance Bar (Dark/Black) */}
+                                <div
+                                  className="w-3.5 rounded-t-[4px] bg-gradient-to-t from-neutral-800 via-neutral-700 to-neutral-500 transition-all duration-500 group-hover/bar:brightness-125 origin-bottom"
+                                  style={{ height: `${balanceHeightPct}%` }}
+                                  title="Remaining Balance"
+                                />
+                              </div>
+
+                              {/* Year label below bar */}
+                              <span className="text-[10px] font-bold text-neutral-300 uppercase tracking-wider mt-1 text-center">
+                                Year {yr.year}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+
+            {/* Bottom Download Button — Explicit 3-Year Repayment Strategy */}
+            <div className="border-t border-neutral-800/80 pt-4 flex justify-center">
+              <AnimatedDownloadButton
+                onDownload={handleDownloadYearlyReport}
+                text="DOWNLOAD 3-YEAR PLAN"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart 2 & 3 Side by Side (Desktop Clean Alignment) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        {/* Cash Flow Visual Allocation */}
+        <Card eyebrow="Monthly Budget" title="Income Allocation Gauge">
+          <p className="text-xs text-[#667085] mb-5">
+            How your <span className="figure font-bold text-[#161C2D]">£{currentIncome.toLocaleString('en-GB')}</span> monthly income splits into expenses vs. target vs. buffer.
+          </p>
+
+          {/* Interactive Stationary Donut Chart */}
+          {(() => {
+            const activeIndex = hoveredSlice !== null ? hoveredSlice : selectedSlice;
+            const activeSlice = cashFlowSlices[activeIndex] || cashFlowSlices[0];
+            const pct = activeSlice.pct.toFixed(1);
+            const amount = Math.round(activeSlice.amount);
+
+            let feedbackText = "";
+            if (activeSlice.pct < 20) {
+              feedbackText = `Excellent. ${activeSlice.label} uses only ${pct}% of your monthly income (£${amount}), leaving significant flexibility for savings or future financial goals.`;
+            } else if (activeSlice.pct <= 35) {
+              feedbackText = `Good. ${activeSlice.label} represents ${pct}% of your monthly income (£${amount}) and remains within the healthy recommended range below 35%.`;
+            } else {
+              feedbackText = `${activeSlice.label} consumes ${pct}% of your monthly income (£${amount}), which is above the recommended 35% range. Consider reducing this expense if possible to improve your financial flexibility.`;
+            }
+
+            return (
+              <div className="flex flex-col justify-between h-full">
+                {/* Circular Donut Chart — Perfectly Sized to Fit Card */}
+                <div
+                  className="relative w-full h-64 sm:h-72 mx-auto my-1 flex items-center justify-center group cursor-pointer"
+                  onMouseLeave={() => setHoveredSlice(null)}
+                >
+                  <svg
+                    viewBox="0 0 42 42"
+                    className="w-56 h-56 sm:w-64 sm:h-64 overflow-visible relative z-10 -rotate-90"
+                  >
+                    {(() => {
+                      let accumulatedPct = 0;
+                      return cashFlowSlices.map((slice, i) => {
+                        const dash = `${slice.pct} ${100 - slice.pct}`;
+                        const offset = -accumulatedPct;
+                        accumulatedPct += slice.pct;
+                        const isSelectedOrHovered = activeIndex === i;
+                        return (
+                          <g key={i}>
+                            {/* Stationary Slice — No pop-out/explode, smooth glow highlight only */}
+                            <circle
+                              cx="21"
+                              cy="21"
+                              r="15.9154943"
+                              fill="transparent"
+                              stroke={slice.stroke}
+                              strokeWidth={isSelectedOrHovered ? "7" : "5.5"}
+                              strokeDasharray={dash}
+                              strokeDashoffset={offset}
+                              opacity={isSelectedOrHovered ? 1 : 0.8}
+                              onClick={() => { setSelectedSlice(i); setHoveredSlice(i); }}
+                              onMouseEnter={(e) => { e.stopPropagation(); setHoveredSlice(i); }}
+                              className="transition-all duration-300 cursor-pointer origin-center"
+                              style={{
+                                filter: isSelectedOrHovered ? `drop-shadow(0px 0px 8px ${slice.stroke})` : 'none'
+                              }}
+                            />
+                          </g>
+                        )
+                      })
+                    })()}
+                  </svg>
+
+                  {/* Center Constant Details (Synchronized with active category) */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-all duration-300 z-10">
+                    <div className="flex flex-col items-center animate-fade-in text-center">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#667085] mb-0.5">{activeSlice.label}</span>
+                      <span className="text-2xl sm:text-3xl font-black text-[#161C2D] figure leading-none">£{amount}</span>
+                      <div className="flex items-center gap-1.5 mt-2 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full shadow-xs border border-[#EEF2F7]">
+                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: activeSlice.stroke }} />
+                        <span className="text-[11px] font-extrabold" style={{ color: activeSlice.stroke }}>{pct}% Utilisation</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contextual Analysis Panel (Always Active & Synchronized) */}
+                <div className="mt-auto p-4 rounded-2xl bg-white border border-[#EEF2F7] shadow-sm transition-all duration-300 text-left">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: activeSlice.stroke }} />
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#161C2D]">
+                      {activeSlice.label} Analysis
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#667085] leading-relaxed">
+                    {feedbackText}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
+        </Card>
+
+        {/* Exchange Rate Purchasing Power Sensitivity */}
+        <Card eyebrow="Forex Impact" title="Rate Sensitivity Simulator">
+          <p className="text-xs text-[#667085] mb-5">
+            Impact of exchange rate shifts on your yearly <span className="figure font-bold text-[#161C2D]">£{PLAN.yearlyTarget.toLocaleString()}</span> transfer:
+          </p>
+
+          <div className="flex flex-col gap-5">
+            <div className="bg-[#F9FBFD] p-5 rounded-[16px] border border-[#EEF2F7]">
+              <div className="flex justify-between items-center mb-5">
+                <span className="text-sm font-semibold text-[#667085]">Simulated Rate</span>
+                <span className="text-3xl font-bold text-[#161C2D] figure tracking-tight">₹{simRate} <span className="text-sm text-[#667085] font-semibold">/ £</span></span>
+              </div>
+              <input
+                type="range"
+                min="115"
+                max="145"
+                step="0.5"
+                value={simRate}
+                onChange={(e) => setSimRate(Number(e.target.value))}
+                className="w-full h-2.5 bg-[#D0D5DD] rounded-full appearance-none cursor-grab active:cursor-grabbing hover:bg-[#98A2B3] transition-colors range-3d"
+              />
+              <div className="flex justify-between text-[11px] font-bold text-[#98A2B3] mt-3 uppercase tracking-wider">
+                <span>₹115</span>
+                <span>₹130 (Base)</span>
+                <span>₹145</span>
+              </div>
+            </div>
+
+            {/* Impact Calculation */}
+            {(() => {
+              const inrVal = PLAN.yearlyTarget * simRate;
+              const diffFromBase = inrVal - PLAN.yearlyTarget * CURRENCY.defaultRate;
+              return (
+                <div className="flex items-center justify-between p-4 bg-white border border-[#EEF2F7] rounded-[14px] shadow-sm-clean">
+                  <span className="text-sm font-semibold text-[#161C2D]">Yearly Transfer Power</span>
+                  <div className="text-right">
+                    <span className="figure text-xl font-bold text-[#161C2D] tracking-tight">
+                      <AnimatedCounter prefix="₹" value={inrVal / 100000} format={false} suffix="L" />
+                    </span>
+                    {diffFromBase !== 0 && (
+                      <span className={`block text-[11px] figure font-bold mt-0.5 ${diffFromBase > 0 ? 'text-[#93E33C]' : 'text-[#ED000C]'}`}>
+                        {diffFromBase > 0 ? '+' : ''}₹{(diffFromBase / 1000).toFixed(0)}k vs base
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Forex Bank Links (Rectangular Card Style) */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 w-full">
+              <a
+                href="https://www.icici.bank.in/corporate/global-markets/forex/forex-card-rate"
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-1 items-center justify-center gap-2 w-full py-3 px-4 rounded-[16px] border border-[#EEF2F7] bg-white shadow-sm hover:shadow-md hover:border-[#D0D5DD] transition-all group overflow-hidden"
+                title="ICICI Bank Forex"
+              >
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/ICICI_Bank_Logo.svg" alt="ICICI" className="h-7 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+              </a>
+              <a
+                href="https://sbi.bank.in/documents/16012/1400784/FOREX_CARD_RATES.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-1 items-center justify-center gap-2 w-full py-3 px-4 rounded-[16px] border border-[#EEF2F7] bg-white shadow-sm hover:shadow-md hover:border-[#D0D5DD] transition-all group overflow-hidden"
+                title="SBI Forex"
+              >
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/SBI-logo.svg" alt="SBI" className="h-7 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+              </a>
+              <button
+                onClick={() => setIsFlywayModalOpen(true)}
+                className="flex flex-1 items-center justify-center gap-2 w-full py-3 px-4 rounded-[16px] border border-[#EEF2F7] bg-white shadow-sm hover:shadow-md hover:border-[#D0D5DD] transition-all group overflow-hidden"
+                title="Flywire"
+              >
+                <img src={IMAGES.flywire} alt="Flywire" className="h-6 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* New Simulator UI */}
+      {(() => {
+        // Use temp values for live preview (updated by sliders; saved to global on 'Save')
+        const P = tempBasicLoan;
+        const P_0 = tempBasicLoan;
+        const R_annual = tempInterestRate;
+        const M = tempMoratoriumMonths;
+        const coApplicant = hasCoApplicant ? coApplicantContribution : 0;
+
+        const yearlyInterest = P_0 * (R_annual / 100);
+        const R_monthly = R_annual / 12;
+        const I_month = P_0 * (R_monthly / 100);
+        const monthlyBaseline = P_0 * 0.01;
+        const studentShare = Math.max(0, monthlyBaseline - coApplicant);
+        const I_unpaidTotal = studentShare * M;
+        const P_grad = P_0 + I_unpaidTotal;
+
+        const coApplicantPct = I_month > 0 ? (coApplicant / I_month) * 100 : 0;
+        const principalPct = P_grad > 0 ? (P_0 / P_grad) * 100 : 0;
+
+        // Live Step 2 calculations based on temp values
+        const planYears = 3;
+        const termMonths = planYears * 12;
+        const fixedEMIAllYears = LOAN.monthlyEMIINR * termMonths;
+        const liveTargetYearlyLumpSumINR = Math.max(0, Math.floor((P_grad - fixedEMIAllYears) / planYears));
+        const liveTargetMonthlySavingsGBP = Math.ceil((liveTargetYearlyLumpSumINR / rate) / 12);
+
+        const postGradYears = simulatorYears;
+        const n = postGradYears * 12;
+        const r_emi = (R_annual / 12) / 100;
+
+        let EMI_postGrad = 0;
+        if (r_emi > 0) {
+          EMI_postGrad = (P_grad * r_emi * Math.pow(1 + r_emi, n)) / (Math.pow(1 + r_emi, n) - 1);
+        }
+
+        const getSliderStyle = (val, min, max) => {
+          const percentage = ((val - min) / (max - min)) * 100;
+          return {
+            background: `linear-gradient(to right, #B6F36A 0%, #93E33C ${percentage}%, #EEF2F7 ${percentage}%, #EEF2F7 100%)`
+          };
+        };
+
+        return (
+          <div className="mt-6 mb-8 animate-slide-in-bottom delay-300">
+            <div className="flex flex-col lg:flex-row gap-6">
+
+              {/* Left Column: Sliders */}
+              <div className="flex-1 bg-white border border-[#EEF2F7] rounded-[24px] shadow-sm-clean p-6 lg:p-8 flex flex-col justify-start space-y-8 relative">
+
+                {/* Header Lock Badge */}
+                <div className="flex items-center justify-between border-b border-[#EEF2F7] pb-4">
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-[#667085]">Analytics Controls</span>
+                  {isAnalyticsLocked ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-50 text-amber-700 border border-amber-200 shadow-sm animate-fade-in">
+                      <svg className="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Controls Locked
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm animate-fade-in">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                      Editable Mode
+                    </span>
+                  )}
+                </div>
+
+                {/* Loan Amount */}
+                <div className={`space-y-4 relative z-10 pt-2 transition-opacity ${isAnalyticsLocked ? 'opacity-70 pointer-events-none' : ''}`}>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-semibold text-[#161C2D]">How much your loan have currently?</label>
+                    <div className="bg-[#F9FBFD] border border-[#EEF2F7] rounded-xl px-4 py-2 flex items-center gap-2">
+                      <span className="text-[#4A7BFF] font-bold">₹</span>
+                      <span className="text-lg font-extrabold text-[#161C2D] figure">{tempBasicLoan.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                  <div className="relative pt-2">
+                    <input
+                      type="range"
+                      min="100000"
+                      max="10000000"
+                      step="50000"
+                      disabled={isAnalyticsLocked}
+                      value={tempBasicLoan}
+                      onChange={(e) => {
+                        const val = Number(e.target.value)
+                        setTempBasicLoan(val)
+                        setBasicLoan(val)
+                      }}
+                      style={{ ...getSliderStyle(tempBasicLoan, 100000, 10000000), touchAction: 'pan-y' }}
+                      className="w-full h-2.5 bg-[#EEF2F7] rounded-full appearance-none cursor-grab active:cursor-grabbing hover:bg-[#D0D5DD] transition-colors range-3d disabled:cursor-not-allowed"
+                    />
+                    <div className="flex justify-between text-[11px] font-bold text-[#98A2B3] mt-2 tracking-wider">
+                      <span>₹1,00,000</span>
+                      <span>₹1,00,00,000</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Interest Rate */}
+                <div className={`space-y-4 transition-opacity ${isAnalyticsLocked ? 'opacity-70 pointer-events-none' : ''}`}>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-semibold text-[#161C2D]">Interest rate (per year)</label>
+                    <div className="bg-[#F9FBFD] border border-[#EEF2F7] rounded-xl px-4 py-2 flex items-center gap-1">
+                      <span className="text-lg font-extrabold text-[#161C2D] figure">{tempInterestRate}</span>
+                      <span className="text-[#667085] font-bold text-sm">%</span>
+                    </div>
+                  </div>
+                  <div className="relative pt-2">
+                    <input
+                      type="range"
+                      min="1"
+                      max="20"
+                      step="0.1"
+                      disabled={isAnalyticsLocked}
+                      value={tempInterestRate}
+                      onChange={(e) => {
+                        const val = Number(e.target.value)
+                        setTempInterestRate(val)
+                        setInterestRate(val)
+                      }}
+                      style={{ ...getSliderStyle(tempInterestRate, 1, 20), touchAction: 'pan-y' }}
+                      className="w-full h-2.5 bg-[#EEF2F7] rounded-full appearance-none cursor-grab active:cursor-grabbing hover:bg-[#D0D5DD] transition-colors range-3d disabled:cursor-not-allowed"
+                    />
+                    <div className="flex justify-between text-[11px] font-bold text-[#98A2B3] mt-2 tracking-wider">
+                      <span>1%</span>
+                      <span>20%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Course + Grace Period */}
+                <div className={`space-y-4 transition-opacity ${isAnalyticsLocked ? 'opacity-70 pointer-events-none' : ''}`}>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-semibold text-[#161C2D]">Course + grace period</label>
+                    <div className="bg-[#F9FBFD] border border-[#EEF2F7] rounded-xl px-4 py-2 flex items-center gap-1">
+                      <span className="text-lg font-extrabold text-[#161C2D] figure">{tempMoratoriumMonths}</span>
+                      <span className="text-[#667085] font-bold text-sm">months</span>
+                    </div>
+                  </div>
+                  <div className="relative pt-2">
+                    <input
+                      type="range"
+                      min="12"
+                      max="72"
+                      step="6"
+                      disabled={isAnalyticsLocked}
+                      value={tempMoratoriumMonths}
+                      onChange={(e) => {
+                        const val = Number(e.target.value)
+                        setTempMoratoriumMonths(val)
+                        setMoratoriumMonths(val)
+                      }}
+                      style={{ ...getSliderStyle(tempMoratoriumMonths, 12, 72), touchAction: 'pan-y' }}
+                      className="w-full h-2.5 bg-[#EEF2F7] rounded-full appearance-none cursor-grab active:cursor-grabbing hover:bg-[#D0D5DD] transition-colors range-3d disabled:cursor-not-allowed"
+                    />
+                    <div className="flex justify-between text-[11px] font-bold text-[#98A2B3] mt-2 tracking-wider">
+                      <span>12 mos</span>
+                      <span>72 mos</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons: Save Analytics & Reset */}
+                <div className="pt-4 pb-2 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* Save Analytics Button */}
+                    <button
+                      type="button"
+                      onClick={handleSaveAnalytics}
+                      disabled={isAnalyticsLocked}
+                      className="sm:col-span-2 py-3.5 px-5 rounded-xl font-extrabold text-sm tracking-wide text-white transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                      style={{
+                        background: 'linear-gradient(135deg, #0034de 0%, #006eff 100%)',
+                        boxShadow: '0px 4px 12px rgba(0, 110, 255, 0.25), inset 0px 2px 4px rgba(255, 255, 255, 0.2)'
+                      }}
+                    >
+                      <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                      </svg>
+                      {isAnalyticsLocked ? 'Saved & Locked' : 'Save Analytics Settings'}
+                    </button>
+
+                    {/* Reset Button (Matching Size & Styling) */}
+                    <button
+                      type="button"
+                      onClick={handleResetAnalytics}
+                      className="py-3.5 px-4 rounded-xl font-extrabold text-sm tracking-wide text-[#161C2D] bg-[#F1F5F9] border border-[#CBD5E1] hover:bg-[#E2E8F0] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      <svg className="w-4 h-4 text-[#475569]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Reset
+                    </button>
+                  </div>
+
+                  {showSavedNotification && (
+                    <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-xs font-extrabold flex items-center justify-center gap-2 animate-fade-in">
+                      <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Analytics locked and saved to local storage!
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8">
+                  <WalletCard isProUnlocked={isProUnlocked} onRequirePro={onRequirePro} />
+                </div>
+
+                <div className="mt-2 mb-6 w-full max-w-2xl mx-auto bg-neutral-950 rounded-[24px] border border-[#EEF2F7]/10 shadow-2xl relative overflow-hidden group flex flex-col sm:flex-row items-stretch double-invert">
+                  <div className="absolute -top-1/2 left-0 h-64 w-64 rounded-full bg-lime-500/10 blur-3xl transition-all duration-700 group-hover:bg-lime-500/20 pointer-events-none" />
+
+                  {/* Left Side: Text */}
+                  <div className="relative z-10 p-6 flex flex-col flex-1">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-neutral-900 border border-neutral-800 text-[10px] font-bold text-neutral-300 uppercase tracking-widest">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-lime-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Community Poll
+                      </span>
+                    </div>
+
+                    <h4 className="text-xl font-extrabold text-white leading-tight mb-2">
+                      Shape Our Next <span className="text-lime-400">Premium</span> Feature
+                    </h4>
+
+                    <p className="text-xs text-neutral-400 mb-6 leading-relaxed max-w-sm">
+                      Tell us what tools you need most to reduce your loan burden. Your feedback helps us build smarter tools for your financial journey.
+                    </p>
+
+                    <div className="mt-auto">
+                      {hasVoted ? (
+                        <div className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-lime-500/10 text-lime-400 font-bold text-sm rounded-xl border border-lime-500/20 w-max animate-pulse">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          Your vote has been noted!
+                        </div>
+                      ) : (
+                        <button
+                          onClick={handlePollVote}
+                          disabled={isVoting}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-lime-400 hover:bg-lime-300 text-neutral-950 font-bold text-sm rounded-xl transition-colors group/btn shadow-[0_0_20px_rgba(163,230,53,0.15)] w-max disabled:opacity-50"
+                        >
+                          {isVoting ? (
+                            <>
+                              <svg className="animate-spin h-4 w-4 text-neutral-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                              Noting Vote...
+                            </>
+                          ) : (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                              Take the Poll
+                              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </>
+                          )}
+                        </button>
+                      )}
+                      <LikeButton />
+                    </div>
+                  </div>
+
+                  {/* Right Side: Full Image */}
+                  <div className="relative z-10 w-full sm:w-[45%] bg-black flex items-center justify-center p-0">
+                    <img src={IMAGES.poll} alt="Poll Illustration" className="w-full h-full object-cover sm:object-contain object-center drop-shadow-2xl hover:scale-[1.02] transition-transform duration-500" />
+                  </div>
+                </div>
+
+                <div className="mt-2 mb-8 w-full max-w-2xl mx-auto">
+                  <TypewriterText text="Don't be stressed buddy, let the Freedom Plan do the heavy lifting for you!" />
+                </div>
+
+              </div>
+
+              {/* Right Column: Results */}
+              <div className="flex-1 flex flex-col gap-6">
+
+                {/* ── Green Flip Card (Front + Back) ── */}
+                {(() => {
+                  // ── Correct reducing-balance schedule ──────────────────────
+                  // Each year: interest on opening balance, then deduct EMI stream + lump sum.
+                  // Baseline: same but NO lump sum (to compute interest saved).
+                  const annualEMI = LOAN.monthlyEMIINR * 12;
+                  const schedule = [];
+                  const baseline = [];
+                  let bal = P_grad;
+                  let balBase = P_grad;
+                  let cumInterestSaved = 0;
+                  for (let i = 0; i < 3; i++) {
+                    // With prepayment
+                    const opening = Math.max(0, bal);
+                    const interest = Math.round(opening * (R_annual / 100));
+                    const lump = Math.min(liveTargetYearlyLumpSumINR, Math.max(0, opening + interest - annualEMI));
+                    const closing = Math.max(0, opening + interest - annualEMI - lump);
+                    // Baseline (no lump sum)
+                    const openingBase = Math.max(0, balBase);
+                    const interestBase = Math.round(openingBase * (R_annual / 100));
+                    const closingBase = Math.max(0, openingBase + interestBase - annualEMI);
+                    // Interest saved this year vs baseline
+                    const interestSavedThisYear = Math.max(0, interestBase - interest);
+                    cumInterestSaved += interestSavedThisYear;
+                    schedule.push({
+                      year: i + 1,
+                      opening,
+                      interest,
+                      annualEMI,
+                      lump,
+                      totalPaid: annualEMI + lump,
+                      closing,
+                      principalReduced: opening - closing,
+                      interestSavedNextYear: i < 2 ? Math.round((closing) * (R_annual / 100)) - Math.round(Math.max(0, closingBase) * (R_annual / 100)) : 0,
+                      interestSaved: interestSavedThisYear,
+                      cumInterestSaved,
+                    });
+                    bal = closing;
+                    balBase = closingBase;
+                  }
+
+                  return (
+                    <div
+                      className="relative isolate overflow-visible w-full group cursor-pointer"
+                      style={{ perspective: '1200px' }}
+                      onMouseEnter={() => window.innerWidth >= 1024 && setIsGreenCardFlipped(true)}
+                      onMouseLeave={() => window.innerWidth >= 1024 && setIsGreenCardFlipped(false)}
+                      onClick={() => window.innerWidth < 1024 && setIsGreenCardFlipped(!isGreenCardFlipped)}
+                    >
+                      <div
+                        className="relative w-full transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                        style={{ transformStyle: 'preserve-3d', transform: isGreenCardFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+                      >
+                        {/* ── FRONT ── */}
+                        <GreenCardFront schedule={schedule} R_annual={R_annual} M={M} P_0={P_0} P_grad={P_grad} unpaidInterest={Math.round(studentShare * M)} onDownload={handleDownloadYearlyReport} />
+
+                        {/* ── BACK ── */}
+                        <GreenCardBack schedule={schedule} onDownload={handleDownloadYearlyReport} />
+                      </div>
+                    </div>
+                  );
+                })()}
+
+
+
+                {/* Legend and Monthly Strategy with restored Small SVG Pie Chart */}
+                <div className="bg-[#161C2D] border border-[#232A3B] rounded-[20px] p-5 shadow-md flex flex-col sm:flex-row items-center gap-5 w-full">
+                  {/* Small SVG Donut / Pie Chart */}
+                  <div className="relative w-28 h-28 flex-shrink-0 flex items-center justify-center bg-[#111625] rounded-full p-2 border border-[#232A3B]">
+                    <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                      <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#1D2435" strokeWidth="4" />
+                      {/* Unpaid Interest Share (Dark Red) */}
+                      <circle
+                        cx="18" cy="18" r="15.9155"
+                        fill="none"
+                        stroke="#DC2626"
+                        strokeWidth="4.5"
+                        strokeDasharray={`${Math.max(0, Math.min(100, (studentShare / Math.max(1, studentShare + coApplicant)) * 100))} 100`}
+                        strokeDashoffset="0"
+                        className="transition-all duration-500 ease-out"
+                      />
+                      {/* Co-applicant Share (Green) */}
+                      {hasCoApplicant && coApplicant > 0 && (
+                        <circle
+                          cx="18" cy="18" r="15.9155"
+                          fill="none"
+                          stroke="#4ade80"
+                          strokeWidth="4.5"
+                          strokeDasharray={`${Math.max(0, Math.min(100, (coApplicant / Math.max(1, studentShare + coApplicant)) * 100))} 100`}
+                          strokeDashoffset={`-${(studentShare / Math.max(1, studentShare + coApplicant)) * 100}`}
+                          className="transition-all duration-500 ease-out"
+                        />
+                      )}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-[9px] font-extrabold text-[#98A2B3] uppercase tracking-tighter">Share</span>
+                      <span className="text-xs font-black text-white">
+                        {Math.round((studentShare / Math.max(1, studentShare + coApplicant)) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Cards: Co-applicant Pays & Unpaid (Added) */}
+                  <div className="flex-1 space-y-3 w-full">
+                    <div className="bg-[#1D2435] border border-[#2E374A] rounded-[14px] p-3.5 flex flex-col justify-between transition-colors hover:bg-[#232A3B] group cursor-default">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#4ade80] shadow-sm"></div>
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <div className="checkbox onoff-btn transform scale-75 origin-center">
+                              <input
+                                type="checkbox"
+                                checked={hasCoApplicant}
+                                onChange={(e) => setHasCoApplicant(e.target.checked)}
+                                className="onoff-btn-checkbox"
+                              />
+                              <svg className="onoff-btn-icon icon-cross absolute" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                              </svg>
+                              <svg className="onoff-btn-icon icon-check absolute" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
+                            <span className="text-xs font-bold text-[#98A2B3] uppercase tracking-wider">Co-applicant Pays</span>
+                          </label>
+                        </div>
+                        {hasCoApplicant && (
+                          <div className="flex items-center gap-2 bg-[#161C2D] border border-[#334155] rounded-xl px-2 py-1 w-24">
+                            <span className="text-[#98A2B3] font-bold text-xs">₹</span>
+                            <input
+                              type="number"
+                              value={coApplicantContribution}
+                              onChange={(e) => setCoApplicantContribution(Number(e.target.value) || 0)}
+                              className="bg-transparent w-full font-black text-white text-sm figure focus:outline-none"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-base font-black text-white figure mt-0.5">₹{coApplicant.toLocaleString('en-IN')}</span>
+                    </div>
+
+                    <div className="bg-[#1D2435] border border-[#2E374A] rounded-[14px] p-3.5 flex flex-col justify-between transition-colors hover:bg-[#232A3B] group cursor-default">
+                      <div className="flex items-center gap-2.5 mb-1">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#DC2626] shadow-sm"></div>
+                        <span className="text-xs font-bold text-[#98A2B3] uppercase tracking-wider">Unpaid (Added)</span>
+                      </div>
+                      <span className="text-base font-black text-white figure">₹{Math.round(studentShare).toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                {/* Section 3: 3-Year Repayment Strategy (GBP INR Freedom Plan) */}
+                <div className="bg-white border border-[#EEF2F7] rounded-[24px] shadow-sm-clean p-6 sm:p-8 flex flex-col">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#667085] mb-5">Step 2: Automatic Monthly Savings Target</h3>
+
+                  <div className="flex flex-col gap-4 mb-8">
+                    <div className="flex justify-between items-center bg-[#F9FBFD] border border-[#EEF2F7] rounded-[14px] p-4">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#667085]">Yearly Payment Goal</span>
+                      <span className="text-xl font-black text-[#161C2D] figure">₹{liveTargetYearlyLumpSumINR.toLocaleString('en-IN')}</span>
+                    </div>
+
+                    <div className="flex justify-center -my-2 z-10">
+                      <div className="bg-white border border-[#EEF2F7] rounded-full p-1.5 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#B6F36A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center bg-[#161C2D] border border-[#161C2D] rounded-[14px] p-5 shadow-lg">
+                      <span className="text-xs font-bold uppercase tracking-wider text-white">Monthly Saving Target</span>
+                      <div className="text-right">
+                        <span className="block text-2xl font-black text-[#B6F36A] figure">£{liveTargetMonthlySavingsGBP.toLocaleString('en-GB')} / mo</span>
+                        <span className="block text-[10px] font-semibold text-white/60 mt-1">₹{Math.floor(liveTargetYearlyLumpSumINR / 12).toLocaleString('en-IN')} equivalent</span>
+                      </div>
+                    </div>
+                    <div className="bg-[#B6F36A]/10 border border-[#B6F36A]/30 rounded-[12px] p-3 mt-1">
+                      <p className="text-[11px] font-bold text-[#161C2D] text-center">
+                        Meeting this target ensures you cover all unpaid interest and successfully clear your yearly repayment goal!
+                      </p>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-[#667085] mb-4">Step 3: Three-Year Plan</h3>
+                  <p className="text-[10px] font-bold text-[#667085] mb-4">The system automatically generates:</p>
+
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((year) => (
+                      <div key={year} className="flex justify-between items-center bg-[#F9FBFD] border border-[#EEF2F7] rounded-[12px] p-3.5 group hover:bg-white transition-colors">
+                        <span className="text-xs font-extrabold text-[#161C2D]">Year {year}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-semibold text-[#667085]">Save <span className="font-bold text-[#161C2D]">£{liveTargetMonthlySavingsGBP.toLocaleString('en-GB')}</span>/mo</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-[#B6F36A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                          <span className="text-xs font-bold text-[#161C2D]">Pay ₹{liveTargetYearlyLumpSumINR.toLocaleString('en-IN')}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Liquid Glass Support Card */}
+                <div
+                  className="rounded-[32px] backdrop-blur-xl border border-white/40 shadow-[0_12px_36px_rgba(102,51,238,0.18)] p-4 sm:p-5 flex flex-col items-center justify-between text-center overflow-hidden relative isolate"
+                  style={{
+                    flex: '1 1 0%',
+                    minHeight: '0',
+                    height: '100%',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  {/* Custom Radial Gradient Background (Get in Touch card only) */}
+                  <div
+                    className="absolute inset-0 w-full h-full pointer-events-none rounded-[32px] -z-10"
+                    style={{ background: 'radial-gradient(125% 125% at 50% 10%, #fff 40%, #E0FBED 100%)' }}
+                  />
+
+                  {/* Subtle liquid glass top highlight */}
+                  <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent pointer-events-none" />
+
+                  {/* Main Center Content */}
+                  <div className="flex flex-col items-center justify-center flex-1 w-full relative z-10 py-1">
+
+                    {/* Centered Heading */}
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-2">
+                      Get in Touch
+                    </h2>
+
+                    {/* Top Center Larger Circular Profile Image */}
+                    <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white/90 shadow-xl bg-white/20 shrink-0 my-1">
+                      <img
+                        src={IMAGES.renuka_contact}
+                        alt="Renuka"
+                        className="w-full h-full object-cover object-top rounded-full"
+                      />
+                    </div>
+
+                    {/* Text Below Profile Image */}
+                    <div className="mt-1.5 text-center flex flex-col items-center">
+                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
+                        Contact Renuka
+                      </h3>
+                      <div className="inline-flex items-center gap-1 bg-white/50 border border-white/70 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold text-slate-900 shadow-sm my-1">
+                        <span>Senior Relationship Manager</span>
+                      </div>
+                      <p className="text-xs sm:text-sm font-semibold italic text-slate-800 mt-0.5 max-w-[240px] mx-auto leading-tight">
+                        Get your queries resolved in just a few minutes.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Action Bar: Email Icon (Left) & WhatsApp Icon (Right) Only */}
+                  <div className="w-full flex items-center justify-between pt-2 px-2 relative z-10 border-t border-black/10 mt-auto">
+                    {/* Email Icon Only (Left) */}
+                    <a
+                      href="mailto:freedomplan786@gmail.com?subject=Query%20Regarding%20Freedom%20Plan"
+                      title="Email: freedomplan786@gmail.com"
+                      className="w-10 h-10 rounded-full bg-white/40 hover:bg-white/60 active:scale-95 border border-white/60 backdrop-blur-md flex items-center justify-center text-slate-900 transition-all shadow-sm"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </a>
+
+                    {/* WhatsApp Icon Only (Right) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onTriggerWhatsApp) {
+                          onTriggerWhatsApp();
+                        } else {
+                          window.open('https://wa.me/917993144249?text=Hi%20Renuka%2C%20I%20would%20like%20to%20connect%20with%20you%20regarding%20my%20Freedom%20Plan%20queries.', '_blank');
+                        }
+                      }}
+                      title="WhatsApp: +91 79931 44249"
+                      className="w-10 h-10 rounded-full bg-white/40 hover:bg-white/60 active:scale-95 border border-white/60 backdrop-blur-md flex items-center justify-center text-slate-900 transition-all shadow-sm cursor-pointer"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      <FlywayModal isOpen={isFlywayModalOpen} onClose={() => setIsFlywayModalOpen(false)} />
+    </div>
+  )
+}
+
+/* ── Green Card FRONT ── */
+function GreenCardFront({ schedule, R_annual, M, P_0, P_grad, unpaidInterest, onDownload }) {
+  const totalInterest = Math.round(P_0 * (R_annual / 100) * (M / 12));
+
+  return (
+    <div
+      className="bg-gradient-to-br from-lime-400 to-lime-500 rounded-[28px] p-6 sm:p-7 text-center shadow-2xl shadow-lime-500/25 text-neutral-950 relative overflow-hidden border border-lime-300 w-full flex flex-col justify-between gap-4"
+      style={{ backfaceVisibility: 'hidden', minHeight: '360px' }}
+    >
+      {/* Background texture */}
+      <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+      <div className="absolute -top-1/3 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-white/25 blur-3xl pointer-events-none" />
+
+      {/* Top Header & Download Action Row (Clean separation, zero overlapping) */}
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 w-full border-b border-lime-950/15 pb-3">
+        <div className="text-center sm:text-left">
+          <p className="text-[10.5px] font-extrabold uppercase tracking-[0.18em] text-lime-950/70">Total Interest Accumulation</p>
+          <p className="text-[11px] font-bold text-lime-950/80">
+            Calculated at {R_annual}% for {Math.ceil(M / 12)} years ({M} mos)
+          </p>
+        </div>
+        <div className="shrink-0">
+          <AnimatedDownloadButton 
+            onDownload={(e) => { if(e) e.stopPropagation(); onDownload && onDownload(); }} 
+            text="DOWNLOAD 3-YEAR PLAN" 
+          />
+        </div>
+      </div>
+
+      {/* Big Counter Value */}
+      <div className="relative z-10 py-1">
+        <div className="text-5xl sm:text-6xl font-black tracking-tight figure text-neutral-950 leading-none">
+          <AnimatedCounter prefix="₹" value={totalInterest} />
+        </div>
+      </div>
+
+      {/* 3 stat boxes */}
+      <div className="relative z-10 grid grid-cols-3 gap-3 my-1">
+        {[
+          { label: 'Principal', value: `₹${(P_0 / 100000).toFixed(1)}L`, tooltip: false },
+          { label: 'Unpaid Interest', value: `₹${(unpaidInterest / 100000).toFixed(1)}L`, tooltip: true },
+          { label: 'New Principal', value: `₹${(P_grad / 100000).toFixed(1)}L`, tooltip: false },
+        ].map(({ label, value, tooltip }) => (
+          <div key={label} className="bg-white/30 border border-white/40 rounded-2xl px-3 py-3 backdrop-blur-md flex flex-col items-center gap-1.5 relative shadow-xs">
+            <div className="flex items-center gap-1">
+              <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-lime-950/70">{label}</span>
+              {tooltip && <UnpaidInterestTooltip />}
+            </div>
+            <span className="text-base sm:text-lg font-black text-neutral-950 figure leading-none">{value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <p className="relative z-10 text-[11.5px] font-semibold text-lime-950/80 leading-relaxed mx-auto max-w-sm">
+        Paying your yearly interest reduces your future principal and total interest cost.
+      </p>
+    </div>
+  );
+}
+
+/* ── Green Card BACK ── */
+function GreenCardBack({ schedule, onDownload }) {
+  return (
+    <div
+      className="absolute inset-0 bg-gradient-to-br from-lime-400 to-lime-500 rounded-[28px] shadow-2xl shadow-lime-500/25 border border-lime-300 w-full p-6 sm:p-7 flex flex-col justify-between overflow-y-auto text-lime-950"
+      style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', minHeight: '360px' }}
+    >
+      {/* Dot texture */}
+      <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+
+      {/* Top CTA: Download Report */}
+      <div className="relative z-10 bg-white/85 backdrop-blur-md border border-white/60 rounded-2xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+        <div>
+          <p className="text-xs font-extrabold text-lime-950 leading-tight">3-Year Repayment Strategy Report</p>
+          <p className="text-[10px] text-lime-950/80 font-medium mt-0.5">Complete yearly schedules, interest breakdown & principal reduction</p>
+        </div>
+        <div className="relative group shrink-0">
+          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4/5 h-3 bg-gradient-to-r from-green-600 via-lime-400 to-green-500 blur-md rounded-full opacity-80 group-hover:opacity-100 group-hover:blur-lg transition-all duration-300 pointer-events-none" />
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDownload && onDownload(); }}
+            className="relative z-10 py-2.5 px-4 rounded-full font-extrabold uppercase tracking-wide text-[11px] text-[#052E16] transition-all bg-[#98CD3F] hover:opacity-90 shadow-xl border border-[#7DB425]/50 flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap active:scale-95"
+            style={{
+                backgroundImage: MINT_TEXT_URL,
+                backgroundPosition: 'center',
+                backgroundSize: 'auto 150%',
+            }}
+          >
+            <span>DOWNLOAD 3-YEAR PLAN</span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-lime-300 to-transparent rounded-full opacity-90" />
+          </button>
+        </div>
+      </div>
+
+      {/* 3-Year Repayment Strategy Information */}
+      <div className="relative z-10 my-2.5 p-3.5 bg-white/25 border border-white/40 rounded-2xl backdrop-blur-md space-y-1.5 shadow-xs">
+        <p className="text-xs font-black uppercase tracking-widest text-lime-950 text-center">3-Year Repayment Strategy</p>
+        <p className="text-xs font-semibold leading-relaxed text-lime-950/90 text-center px-2">
+          Download your complete 3-year repayment strategy report to view detailed yearly interest calculations, principal paydowns, and remaining balances.
+        </p>
+        <p className="text-[10px] font-medium leading-tight text-lime-950/80 text-center pt-1 border-t border-lime-950/10">
+          <strong>Note:</strong> The remaining balance after each year includes the yearly interest accumulated during that period. Detailed yearly interest calculations are provided in your downloadable report.
+        </p>
+      </div>
+
+      {/* AI Strategy Section — Clean Circular Logos */}
+      <div className="relative z-10 pt-2 border-t border-lime-950/15 flex items-center justify-between">
+        <span className="text-[10px] font-extrabold text-lime-950/80 uppercase tracking-wider">Analyze Plan with AI:</span>
+        <div className="flex items-center gap-4">
+          {/* Gemini */}
+          <a
+            href="https://gemini.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-transform"
+            title="Google Gemini"
+          >
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md border border-white/80 overflow-hidden shrink-0">
+              <img src={IMAGES.gemini_round} alt="Gemini" className="w-full h-full object-cover scale-[1.5]" />
+            </div>
+            <span className="text-[11px] font-extrabold text-lime-950">Gemini</span>
+          </a>
+
+          {/* Claude */}
+          <a
+            href="https://claude.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-transform"
+            title="Claude AI"
+          >
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md border border-white/80 overflow-hidden shrink-0">
+              <img src={IMAGES.claude_round} alt="Claude" className="w-full h-full object-cover scale-[1.45]" />
+            </div>
+            <span className="text-[11px] font-extrabold text-lime-950">Claude</span>
+          </a>
+
+          {/* Perplexity */}
+          <a
+            href="https://www.perplexity.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-transform"
+            title="Perplexity"
+          >
+            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-md border border-white/80 overflow-hidden shrink-0">
+              <img src={IMAGES.perplexity_round} alt="Perplexity" className="w-full h-full object-cover scale-[1.45]" />
+            </div>
+            <span className="text-[11px] font-extrabold text-lime-950">Perplexity</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Unpaid Interest Tooltip ── */
+function UnpaidInterestTooltip() {
+  const [visible, setVisible] = React.useState(false);
+  return (
+    <div className="relative inline-flex" onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
+      <button
+        type="button"
+        onClick={() => setVisible(v => !v)}
+        className="w-4 h-4 rounded-full bg-lime-900/20 border border-lime-900/30 flex items-center justify-center text-[9px] font-black text-lime-950/60 hover:bg-lime-900/30 transition-colors focus:outline-none"
+        aria-label="What is Unpaid Interest?"
+      >ⓘ</button>
+      {visible && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 z-50 animate-fade-in pointer-events-none">
+          <div className="bg-white/95 backdrop-blur-md border border-[#EEF2F7] shadow-2xl rounded-2xl p-3.5">
+            <p className="text-[10px] font-bold text-[#161C2D] mb-1.5">What is Unpaid Interest?</p>
+            <p className="text-[10px] text-[#667085] leading-relaxed">
+              If you don't pay your accumulated interest for the current year, it will be added to your outstanding principal. Interest for the following year will then be calculated on this increased principal.
+            </p>
+          </div>
+          {/* Arrow */}
+          <div className="flex justify-center"><div className="w-2.5 h-2.5 bg-white border-r border-b border-[#EEF2F7] rotate-45 -mt-1.5" /></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Loan Snake Journey ── */
+function LoanSnakeJourney({ principal, interestRate, yearlyPayment, monthlySavingsGBP, monthlyEMI }) {
+  const [hoveredYear, setHoveredYear] = React.useState(null);
+
+  // Build 3-year schedule
+  const schedule = React.useMemo(() => {
+    const years = [];
+    let balance = principal;
+    for (let i = 0; i < 3; i++) {
+      const opening = balance;
+      const displayEMI = Math.round(opening / 100);
+      const annualInterest = Math.round(opening * (interestRate / 100));
+      const totalDue = opening + annualInterest;
+      const annualEMI = monthlyEMI * 12;
+      const totalPayment = yearlyPayment + annualEMI;
+      const closing = Math.max(0, totalDue - totalPayment);
+      years.push({ year: i + 1, opening, displayEMI, annualInterest, totalDue, totalPayment, annualEMI, yearlyLump: yearlyPayment, closing });
+      balance = closing;
+    }
+    return years;
+  }, [principal, interestRate, yearlyPayment, monthlyEMI]);
+
+  const delayMap = ['delay-100', 'delay-300', 'delay-500'];
+  const connectorDelayMap = ['delay-200', 'delay-400'];
+
+  return (
+    <div className="w-full">
+      <h3 className="text-xs font-bold uppercase tracking-widest text-[#667085] mb-5">3-Year Repayment Journey</h3>
+
+      {/* Desktop: snake layout */}
+      <div className="hidden lg:block relative">
+        <div className="flex flex-col gap-0">
+          {schedule.map((yr, i) => {
+            const isRight = i % 2 !== 0; // Year 2 is on the right
+            return (
+              <div key={yr.year}>
+                {/* Year card row */}
+                <div className={`flex items-center ${isRight ? 'flex-row-reverse' : 'flex-row'} gap-4`}>
+                  {/* Card */}
+                  <div
+                    className={`animate-journey-card ${delayMap[i]} flex-shrink-0 w-64 rounded-2xl border border-[#EEF2F7] bg-[#F9FBFD] shadow-sm p-4 cursor-default transition-all duration-300 ${hoveredYear === i ? '-translate-y-1 shadow-lg border-lime-300' : ''}`}
+                    onMouseEnter={() => setHoveredYear(i)}
+                    onMouseLeave={() => setHoveredYear(null)}
+                  >
+                    {/* Card header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-lime-400 flex items-center justify-center">
+                          <span className="text-[10px] font-black text-lime-950">{yr.year}</span>
+                        </div>
+                        <span className="text-xs font-bold text-[#161C2D] uppercase tracking-wider">Year {yr.year}</span>
+                      </div>
+                      <span className="text-[9px] font-bold bg-lime-100 text-lime-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+                    </div>
+
+                    {/* Stats grid */}
+                    <div className="space-y-1.5">
+                      {[
+                        { label: 'Opening Balance', value: `₹${(yr.opening / 100000).toFixed(1)}L`, accent: false },
+                        { label: 'Monthly EMI', value: `₹${yr.displayEMI.toLocaleString('en-IN')}/mo`, accent: false },
+                        { label: 'Annual Interest', value: `+₹${(yr.annualInterest / 100000).toFixed(1)}L`, accent: true },
+                        { label: 'Monthly Savings', value: `£${monthlySavingsGBP}/mo`, accent: false },
+                        { label: 'Annual Payment', value: `₹${(yr.totalPayment / 100000).toFixed(1)}L`, accent: false },
+                        { label: 'Remaining Balance', value: `₹${(yr.closing / 100000).toFixed(1)}L`, accent: false, bold: true },
+                      ].map(({ label, value, accent, bold }) => (
+                        <div key={label} className="flex justify-between items-center">
+                          <span className="text-[10px] text-[#667085]">{label}</span>
+                          <span className={`text-[10px] font-bold figure ${accent ? 'text-red-500' : bold ? 'text-[#161C2D]' : 'text-[#161C2D]'}`}>{value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Arrow label */}
+                    {yr.year < 3 && (
+                      <div className="mt-3 pt-2 border-t border-[#EEF2F7] flex items-center gap-1">
+                        <span className="text-[9px] text-[#667085]">Balance carries to Year {yr.year + 1}</span>
+                        <svg className="w-3 h-3 text-lime-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Horizontal dotted line filling the gap */}
+                  <div className={`animate-journey-card ${delayMap[i]} flex-1 flex items-center ${isRight ? 'flex-row-reverse' : ''}`}>
+                    <svg className="w-full h-6 overflow-visible" viewBox="0 0 200 24" preserveAspectRatio="none">
+                      <line
+                        x1={isRight ? 200 : 0} y1="12" x2={isRight ? 0 : 200} y2="12"
+                        stroke={hoveredYear === i ? '#84cc16' : '#D0D5DD'}
+                        strokeWidth="2"
+                        strokeDasharray="6 4"
+                        className="transition-colors duration-300"
+                      />
+                    </svg>
+                    {/* End dot */}
+                    <div className={`w-3 h-3 rounded-full flex-shrink-0 transition-all duration-300 animate-dot-pulse ${hoveredYear === i ? 'bg-lime-400 scale-125' : 'bg-[#D0D5DD]'}`} />
+                  </div>
+                </div>
+
+                {/* Vertical connector between rows */}
+                {i < 2 && (
+                  <div className={`animate-journey-card ${connectorDelayMap[i]} flex ${i % 2 === 0 ? 'justify-end pr-3' : 'justify-start pl-3'} my-0`}>
+                    <div className="flex flex-col items-center">
+                      <svg height="40" width="2" className="overflow-visible">
+                        <line
+                          x1="1" y1="0" x2="1" y2="40"
+                          stroke="#D0D5DD"
+                          strokeWidth="2"
+                          strokeDasharray="5 4"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Final completion card */}
+        <div className="animate-journey-card delay-700 mt-6 w-full">
+          <CompletionCard />
+        </div>
+      </div>
+
+      {/* Mobile: vertical stacked layout */}
+      <div className="lg:hidden flex flex-col gap-4">
+        {schedule.map((yr, i) => (
+          <div key={yr.year} className="flex flex-col items-center gap-0">
+            <div className={`animate-journey-card ${delayMap[i]} w-full rounded-2xl border border-[#EEF2F7] bg-[#F9FBFD] p-4`}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full bg-lime-400 flex items-center justify-center">
+                  <span className="text-[10px] font-black text-lime-950">{yr.year}</span>
+                </div>
+                <span className="text-xs font-bold text-[#161C2D] uppercase tracking-wider">Year {yr.year}</span>
+              </div>
+              <div className="space-y-1.5">
+                {[
+                  { label: 'Opening Balance', value: `₹${(yr.opening / 100000).toFixed(1)}L` },
+                  { label: 'Annual Interest', value: `+₹${(yr.annualInterest / 100000).toFixed(1)}L`, red: true },
+                  { label: 'Monthly Savings', value: `£${monthlySavingsGBP}/mo` },
+                  { label: 'Annual Payment', value: `₹${(yr.totalPayment / 100000).toFixed(1)}L` },
+                  { label: 'Remaining Balance', value: `₹${(yr.closing / 100000).toFixed(1)}L`, bold: true },
+                ].map(({ label, value, red, bold }) => (
+                  <div key={label} className="flex justify-between items-center">
+                    <span className="text-[10px] text-[#667085]">{label}</span>
+                    <span className={`text-[10px] font-bold figure ${red ? 'text-red-500' : 'text-[#161C2D]'}`}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {yr.year < 3 && (
+              <div className="flex flex-col items-center py-1">
+                <svg height="28" width="2"><line x1="1" y1="0" x2="1" y2="28" stroke="#D0D5DD" strokeWidth="2" strokeDasharray="4 3" /></svg>
+                <div className="w-2.5 h-2.5 rounded-full bg-lime-400" />
+              </div>
+            )}
+          </div>
+        ))}
+        <div className="animate-journey-card delay-700 w-full">
+          <CompletionCard />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompletionCard() {
+  return (
+    <div className="animate-confetti-pop bg-gradient-to-br from-lime-50 to-emerald-50 border-2 border-lime-300 rounded-2xl p-6 text-center shadow-lg shadow-lime-100/60 relative overflow-hidden">
+      {/* Confetti dots */}
+      {['top-2 left-4', 'top-3 right-6', 'top-1 left-1/2', 'top-4 right-12', 'top-2 left-16'].map((pos, i) => (
+        <div key={i} className={`absolute ${pos} w-2 h-2 rounded-full animate-bounce`}
+          style={{ backgroundColor: ['#84cc16', '#f59e0b', '#ec4899', '#3b82f6', '#10b981'][i], animationDelay: `${i * 150}ms` }} />
+      ))}
+
+      <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-lime-400/20 text-lime-600 flex items-center justify-center shadow-inner animate-confetti-pop">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-[#667085] mb-1">Outstanding Balance</p>
+      <div className="animate-balance-zero text-4xl font-bold text-lime-600 figure mb-2">₹0</div>
+      <p className="text-base font-bold text-[#161C2D] mb-1">Congratulations!</p>
+      <p className="text-[11px] text-[#667085] leading-relaxed">
+        Your loan has been completely repaid.<br />No outstanding balance remains.
+      </p>
+
+      <div className="flex justify-center mt-4 mb-4">
+        <AnimatedDownloadButton 
+          onDownload={(e) => { if(e) e.stopPropagation(); onDownload && onDownload(); }} 
+          text="Download Report" 
+        />
+      </div>
+
+      {/* Bottom success bar */}
+      <div className="flex items-center justify-center gap-2 bg-lime-100 border border-lime-200 rounded-xl px-4 py-2">
+        <svg className="w-4 h-4 text-lime-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span className="text-[11px] font-bold text-lime-700">Loan Successfully Completed</span>
+      </div>
+    </div>
+  );
+}
+
+function WalletCard({ isProUnlocked, onRequirePro }) {
+  return (
+    <div className="w-full flex justify-center pt-24 pb-12 mb-6">
+      <div 
+        className={`wallet ${isProUnlocked ? 'pro-unlocked' : ''} ${!isProUnlocked ? 'cursor-pointer' : ''}`}
+        onClick={!isProUnlocked ? onRequirePro : undefined}
+      >
+        <div className="wallet-back"></div>
+
+        <div className="wallet-card stripe">
+          <div className="card-inner">
+            <div className="card-top">
+              <span>Stripe</span>
+              <div className="chip"></div>
+            </div>
+            <div className="card-bottom">
+              <div className="card-info">
+                <span className="label">Holder</span>
+                <span className="value">ALEX SMITH</span>
+              </div>
+              <div className="card-number-wrapper">
+                <span className="hidden-stars">**** 4242</span>
+                <span className="card-number">5524 9910 4242</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="wallet-card wise">
+          <div className="card-inner">
+            <div className="card-top">
+              <span>Wise</span>
+              <div className="chip"></div>
+            </div>
+            <div className="card-bottom">
+              <div className="card-info">
+                <span className="label">Business</span>
+                <span className="value">STUDIO LLC</span>
+              </div>
+              <div className="card-number-wrapper">
+                <span className="hidden-stars">**** 8810</span>
+                <span className="card-number">9012 4432 8810</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="wallet-card paypal">
+          <div className="card-inner">
+            <div className="card-top">
+              <span>Pay<b style={{ color: '#0079C1' }}>Pal</b></span>
+              <div className="chip"></div>
+            </div>
+            <div className="card-bottom">
+              <div className="card-info">
+                <span className="label">Email</span>
+                <span className="value">hello@work.com</span>
+              </div>
+              <div className="card-number-wrapper">
+                <span className="hidden-stars">**** 0094</span>
+                <span className="card-number">3312 0045 0094</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pocket">
+          <svg className="pocket-svg" viewBox="0 0 280 160" fill="none">
+            <path
+              d="M 0 20 C 0 10, 5 10, 10 10 C 20 10, 25 25, 40 25 L 240 25 C 255 25, 260 10, 270 10 C 275 10, 280 10, 280 20 L 280 120 C 280 155, 260 160, 240 160 L 40 160 C 20 160, 0 155, 0 120 Z"
+              fill="#1e341e"
+            ></path>
+            <path
+              d="M 8 22 C 8 16, 12 16, 15 16 C 23 16, 27 29, 40 29 L 240 29 C 253 29, 257 16, 265 16 C 268 16, 272 16, 272 22 L 272 120 C 272 150, 255 152, 240 152 L 40 152 C 25 152, 8 152, 8 120 Z"
+              stroke="#3d5635"
+              strokeWidth="1.5"
+              strokeDasharray="6 4"
+            ></path>
+          </svg>
+
+          <div className="pocket-content group">
+            {isProUnlocked ? (
+              <>
+                <div style={{ position: 'relative', height: '24px', width: '100%' }}>
+                  <div className="balance-stars">******</div>
+                  <div className="balance-real">$12,450.00</div>
+                </div>
+                <div style={{ color: '#698263', fontSize: '12px', fontWeight: 500 }}>
+                  Total Balance
+                </div>
+                <div className="eye-icon-wrapper">
+                  <svg className="eye-icon eye-slash" width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="3" y1="3" x2="21" y2="21"></line></svg>
+                  <svg className="eye-icon eye-open" style={{ opacity: 0 }} width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="absolute inset-x-0 -top-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto flex flex-col items-center justify-center bg-[#161C2D]/95 backdrop-blur-md border border-[#334155] rounded-[16px] p-5 w-64 shadow-2xl z-[100] text-center" style={{ left: '50%', transform: 'translateX(-50%)' }}>
+                  <p className="text-white/90 text-[11px] font-bold mb-4 leading-relaxed uppercase tracking-wider">This feature is available only in the Pro version. Upgrade to access your balance.</p>
+                  <button onClick={onRequirePro} className="bg-lime-400 text-[#161C2D] px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-lime-300 transition-colors w-full active:scale-95">Upgrade to Pro</button>
+                </div>
+                <div className="transition-opacity group-hover:opacity-0 relative z-50 pointer-events-none">
+                  <div style={{ position: 'relative', height: '24px', width: '100%' }}>
+                    <div className="text-[#839e7b] text-2xl tracking-[4px]">******</div>
+                  </div>
+                  <div style={{ color: '#698263', fontSize: '12px', fontWeight: 500, marginTop: '8px' }}>
+                    Total Balance
+                  </div>
+                  <div className="eye-icon-wrapper mx-auto">
+                    <svg className="eye-icon" stroke="#839e7b" width="20" height="20" viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="3" y1="3" x2="21" y2="21"></line></svg>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
