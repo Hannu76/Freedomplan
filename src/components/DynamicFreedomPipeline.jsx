@@ -23,6 +23,9 @@ export default function DynamicFreedomPipeline({
   overallPct = '0.0',
   monthlyTarget = 0,
   lastSaveTimestamp = 0,
+  yearFilterTabs = [],
+  activeFilter = 0,
+  setActiveFilter = () => {},
 }) {
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
@@ -494,6 +497,27 @@ export default function DynamicFreedomPipeline({
           </div>
 
         </div>
+
+        {/* Centered Year Selector Tabs (Embedded at Bottom of 4-Card Pipeline Container) */}
+        {yearFilterTabs && yearFilterTabs.length > 0 && (
+          <div className="flex justify-center items-center w-full pt-3 border-t border-black/10">
+            <div className="inline-flex items-center justify-center bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-black/10 shadow-xs text-xs overflow-x-auto max-w-full">
+              {yearFilterTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveFilter(tab.id)}
+                  className={`px-4 sm:px-6 py-2 rounded-xl font-black text-xs transition-all whitespace-nowrap cursor-pointer text-center ${
+                    activeFilter === tab.id
+                      ? 'bg-[#0F172A] text-white shadow-md'
+                      : 'text-[#475569] hover:text-[#0F172A]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
 
