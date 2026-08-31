@@ -1,0 +1,676 @@
+import React, { createContext, useContext, useMemo, useState } from 'react'
+import { useLocalStorage } from '../utils/useLocalStorage'
+import { buildMonthTimeline } from '../utils/dates'
+import { PLAN, CURRENCY, LOAN } from '../config'
+import { playTargetSound } from '../utils/sound'
+import { isLocalDevelopment } from '../utils/env'
+
+const StoreContext = createContext(null)
+
+const TOTAL_MONTHS = PLAN.planYears * 12
+
+const DEFAULT_ACCOUNTS = [
+  {
+    id: 'india-loan-lump',
+    name: 'India Loan Pre-payment (Primary)',
+    type: 'EMI',
+    targetAmount: 700000,
+    currency: 'INR',
+    frequency: 'Yearly',
+    status: 'Active',
+    notes: 'Yearly lump sum every December toward primary loan principal',
+  },
+  {
+    id: 'india-loan-emi',
+    name: 'India Monthly Loan EMI',
+    type: 'EMI',
+    targetAmount: 5000,
+    currency: 'INR',
+    frequency: 'Monthly',
+    status: 'Active',
+    notes: 'Regular monthly deduction from NRO/savings account',
+  },
+  {
+    id: 'uk-emergency-buffer',
+    name: 'UK Emergency Fund Buffer',
+    type: 'Asset',
+    targetAmount: 3000,
+    currency: 'GBP',
+    frequency: 'Target',
+    status: 'Active',
+    notes: 'High-yield instant access GBP safety net',
+  },
+  {
+    id: 'india-mutual-sip',
+    name: 'India Equity Index SIP',
+    type: 'Asset',
+    targetAmount: 15000,
+    currency: 'INR',
+    frequency: 'Monthly',
+    status: 'Active',
+    notes: 'Long-term wealth accumulation post-debt payoff',
+  },
+]
+
+export function StoreProvider({ children }) {
+  // Authentication & Users System (Global, not prefixed)
+  const [isLoggedIn, setIsLoggedIn] = useLocalStorage('freedomPlan.isLoggedIn', false)
+  const [currentUser, setCurrentUser] = useLocalStorage('freedomPlan.currentUser', null)
+  const [users, setUsers] = useLocalStorage('freedomPlan.users', [])
+  // Session login timestamp — set on login, cleared on logout. Used for 5-min session rule.
+  const [sessionLoginTime, setSessionLoginTime] = React.useState(() => {
+    return isLoggedIn ? Date.now() : null
+  })
+
+  const touchSession = React.useCallback(() => {
+    setSessionLoginTime(Date.now())
+  }, [])
+
+  React.useEffect(() => {
+    if (isLoggedIn && !sessionLoginTime) {
+      setSessionLoginTime(Date.now())
+    } else if (!isLoggedIn) {
+      setSessionLoginTime(null)
+    }
+  }, [isLoggedIn, sessionLoginTime])
+
+  // Helper: check if we have an active session (logged in within last 5 minutes)
+  const isSessionActive = React.useMemo(() => {
+    if (!isLoggedIn || !sessionLoginTime) return false
+    return (Date.now() - sessionLoginTime) < 5 * 60 * 1000
+  }, [isLoggedIn, sessionLoginTime])
+  
+  // The active prefix isolates all user data. Defaults to 'guest' if not logged in.
+  const profilePrefix = isLoggedIn && currentUser?.email ? `freedomPlan.${currentUser.email.toLowerCase().trim()}` : 'freedomPlan.guest'
+
+  // Aliases for backwards compatibility with BlurGate and other components
+  // Local Testing: All sections & Premium are unlocked, editable and fully testable
+  // Production: Locked & blurred according to standard account tier rules
+  const isProUnlocked = isLocalDevelopment || currentUser?.tier === 'pro'
+  const isBasicUnlocked = isLocalDevelopment || isLoggedIn
+  const proLeadData = currentUser
+  const setIsProUnlocked = setIsLoggedIn
+  const setIsBasicUnlocked = setIsLoggedIn
+  const setProLeadData = setCurrentUser
+
+  /**
+   * unlockPremium(token)
+   * Called after successful Razorpay payment verification.
+   * Upgrades the current user to tier:'pro' and persists it in localStorage.
+   * Also stores the JWT token so premium status survives page refresh.
+   * 
+   * @param {string} token - JWT issued by the backend after signature verification
+   */
+  const unlockPremium = React.useCallback((token) => {
+    // Store the JWT for secure persistence
+    try { localStorage.setItem('freedomPlan.premiumToken', token) } catch (_) { }
+
+    const timestamp = new Date().toISOString()
+
+    if (currentUser) {
+      // Upgrade existing user to pro
+      const upgraded = { ...currentUser, tier: 'pro', premium: true, premiumGrantedAt: timestamp }
+      setCurrentUser(upgraded)
+      // Also update in users array
+      setUsers(prev => (Array.isArray(prev) ? prev : []).map(u =>
+        u.email?.toLowerCase().trim() === currentUser.email?.toLowerCase().trim() ? upgraded : u
+      ))
+    } else {
+      // No logged-in user — create a minimal premium guest record
+      const guestPro = {
+        name: 'Premium User',
+        email: 'premium@freedomplan',
+        tier: 'pro',
+        premium: true,
+        premiumGrantedAt: timestamp,
+        lastLogin: timestamp,
+      }
+      setCurrentUser(guestPro)
+      setUsers(prev => [...(Array.isArray(prev) ? prev : []), guestPro])
+    }
+
+    // Ensure logged-in state is set
+    setIsLoggedIn(true)
+    setSessionLoginTime(Date.now())
+  }, [currentUser, setCurrentUser, setUsers, setIsLoggedIn, setSessionLoginTime])
+
+  // Sync Premium Status from Backend
+  React.useEffect(() => {
+    if (currentUser?.email) {
+      const cleanEmail = currentUser.email.toLowerCase().trim()
+      fetch(`/api/auth/me?email=${encodeURIComponent(cleanEmail)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.isPremium) {
+            if (currentUser.tier !== 'pro' || !currentUser.premium) {
+              const upgraded = { ...currentUser, tier: 'pro', premium: true };
+              setCurrentUser(upgraded);
+              setUsers(prev => (Array.isArray(prev) ? prev : []).map(u =>
+                u.email?.toLowerCase().trim() === cleanEmail ? upgraded : u
+              ));
+            }
+          } else if (data && !data.isPremium && currentUser.tier === 'pro') {
+            let hasValidToken = false;
+            try {
+              const token = localStorage.getItem('freedomPlan.premiumToken');
+              if (token) hasValidToken = true;
+            } catch (_) {}
+            if (!hasValidToken) {
+              const downgraded = { ...currentUser, tier: 'basic', premium: false };
+              setCurrentUser(downgraded);
+              setUsers(prev => (Array.isArray(prev) ? prev : []).map(u =>
+                u.email?.toLowerCase().trim() === cleanEmail ? downgraded : u
+              ));
+            }
+          }
+        })
+        .catch(err => console.error('Failed to sync premium status', err));
+    }
+  }, [currentUser?.email, currentUser?.tier]);
+
+  const [darkMode, setDarkMode] = useLocalStorage('freedomPlan.darkMode', false)
+  const [soundEnabled, setSoundEnabled] = useLocalStorage('freedomPlan.soundEnabled', true)
+
+  // GBP -> INR rate, user-editable
+  const [rawRate, setRate] = useLocalStorage(`${profilePrefix}.rate`, CURRENCY.defaultRate)
+  const rate = Number(rawRate) && Number(rawRate) > 0 ? parseFloat(Number(rawRate).toFixed(2)) : CURRENCY.defaultRate
+
+  // New state for all rates
+  const [allRates, setAllRates] = useLocalStorage(`${profilePrefix}.allRates`, {})
+
+  React.useEffect(() => {
+    fetch('https://open.er-api.com/v6/latest/GBP')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.rates && data.rates.INR) {
+          setRate(parseFloat(data.rates.INR.toFixed(2)));
+          setAllRates(data.rates);
+        }
+      })
+      .catch(err => console.error('Failed to fetch exchange rate', err));
+  }, []);
+
+  // Compute effective rates scaling based on the user-edited rate vs API baseline
+  const effectiveRates = useMemo(() => {
+    const fallbackRates = {
+      GBP: 1,
+      INR: 128.14,
+      PKR: 373.78,
+      AFN: 88.54,
+      USD: 1.35,
+      AUD: 1.91,
+    };
+    const baseRates = (allRates && allRates.INR) ? allRates : fallbackRates;
+    const multiplier = rate / baseRates.INR;
+    const scaled = {};
+    for (const [code, val] of Object.entries(baseRates)) {
+      scaled[code] = val * multiplier;
+    }
+    return scaled;
+  }, [allRates, rate]);
+
+  // Initial Loan Principal (Single Source of Truth) — System Default: ₹25,00,000 for new users
+  const [rawBasicLoan, setRawBasicLoan] = useLocalStorage(`${profilePrefix}.basicLoan`, null)
+  const basicLoan = useMemo(() => {
+    if (rawBasicLoan !== null && rawBasicLoan !== undefined && Number(rawBasicLoan) > 0) {
+      return Number(rawBasicLoan)
+    }
+    if (currentUser?.loanAmount !== null && currentUser?.loanAmount !== undefined && Number(currentUser.loanAmount) > 0) {
+      return Number(currentUser.loanAmount)
+    }
+    return 2500000
+  }, [rawBasicLoan, currentUser])
+
+  const setBasicLoan = (val) => {
+    const num = Number(val)
+    if (num > 0) {
+      setRawBasicLoan(num)
+      if (currentUser?.email) {
+        const cleanEmail = currentUser.email.toLowerCase().trim()
+        setCurrentUser(prev => (prev ? { ...prev, loanAmount: num } : prev))
+        setUsers(prev => (Array.isArray(prev) ? prev : []).map(u =>
+          u.email?.toLowerCase().trim() === cleanEmail ? { ...u, loanAmount: num } : u
+        ))
+      }
+    }
+  }
+
+  // Interest Rate — System Default: 12.0% p.a. for new users
+  const [interestRate, setInterestRate] = useLocalStorage(`${profilePrefix}.interestRate`, 12.0)
+
+  React.useEffect(() => {
+    if (interestRate === 11.5) {
+      setInterestRate(12.0)
+    }
+  }, [interestRate, setInterestRate])
+  const [moratoriumMonths, setMoratoriumMonths] = useLocalStorage(`${profilePrefix}.moratoriumMonths`, 36)
+  const [coApplicantContribution, setCoApplicantContribution] = useLocalStorage(`${profilePrefix}.coApplicantContribution`, 5000)
+  const [hasCoApplicant, setHasCoApplicant] = useLocalStorage(`${profilePrefix}.hasCoApplicant`, true)
+  const [isAnalyticsLocked, setIsAnalyticsLocked] = useLocalStorage(`${profilePrefix}.isAnalyticsLocked`, false)
+
+  // Per-month savings entries, keyed by "YYYY-MM":
+  const DEFAULT_ENTRIES = {
+    '2026-10': { saved: 500, savedAt: '2026-10-01T00:00:00.000Z' },
+  }
+  const [rawEntries, setEntries] = useLocalStorage(`${profilePrefix}.entries`, DEFAULT_ENTRIES)
+  const entries = (rawEntries && typeof rawEntries === 'object' && !Array.isArray(rawEntries)) ? rawEntries : DEFAULT_ENTRIES
+
+  // No Income / Skipped Periods State (Defaults to Aug & Sep 2026 for screenshot scenario)
+  const DEFAULT_NO_INCOME_PERIODS = [
+    {
+      id: 'nip_init_aug_sep_2026',
+      startMonthKey: '2026-08',
+      duration: 2,
+      unit: 'months',
+      reason: 'Study',
+      customReasonText: '',
+      createdAt: '2026-08-01T00:00:00.000Z',
+    },
+  ]
+  const [rawNoIncomePeriods, setNoIncomePeriods] = useLocalStorage(`${profilePrefix}.noIncomePeriods`, DEFAULT_NO_INCOME_PERIODS)
+  const noIncomePeriods = Array.isArray(rawNoIncomePeriods) ? rawNoIncomePeriods : DEFAULT_NO_INCOME_PERIODS
+
+  // Grace Period allocation mode for skipped savings: 'split' (across grace months) or 'first_month' (all in 1st month)
+  const [graceAllocationMode, setGraceAllocationMode] = useLocalStorage(`${profilePrefix}.graceAllocationMode`, 'split')
+
+  const addNoIncomePeriod = (period) => {
+    const newPeriod = {
+      id: `nip_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      createdAt: new Date().toISOString(),
+      ...period,
+    }
+    setNoIncomePeriods((prev) => [...(Array.isArray(prev) ? prev : []), newPeriod])
+    return newPeriod
+  }
+
+  const updateNoIncomePeriod = (id, patch) => {
+    setNoIncomePeriods((prev) => (Array.isArray(prev) ? prev : []).map((p) => (p.id === id ? { ...p, ...patch } : p)))
+  }
+
+  const removeNoIncomePeriod = (id) => {
+    setNoIncomePeriods((prev) => (Array.isArray(prev) ? prev : []).filter((p) => p.id !== id))
+  }
+
+  const resetScheduleAdjustments = () => {
+    // Clears all No Income periods and resets any schedule adjustments,
+    // while strictly PRESERVING all historical actual savings entries.
+    setNoIncomePeriods([])
+  }
+
+  // Free-form notes (transfer fees, exchange rate used, etc.)
+  const [generalNotes, setGeneralNotes] = useLocalStorage(`${profilePrefix}.generalNotes`, '')
+
+  // Multi-Account AMS management
+  const [rawAccounts, setAccounts] = useLocalStorage(`${profilePrefix}.accounts`, DEFAULT_ACCOUNTS)
+  const accounts = Array.isArray(rawAccounts) ? rawAccounts : DEFAULT_ACCOUNTS
+
+  // Amortization Simulator Sandbox state
+  const [rawSimulator, setSimulator] = useLocalStorage(`${profilePrefix}.simulator`, {
+    extraMonthlyPrepaymentGBP: 0,
+    extraYearlyLumpSumINR: 0,
+    simulatedRate: CURRENCY.defaultRate,
+  })
+  const simulator = (rawSimulator && typeof rawSimulator === 'object' && !Array.isArray(rawSimulator)) ? {
+    extraMonthlyPrepaymentGBP: Number(rawSimulator.extraMonthlyPrepaymentGBP) || 0,
+    extraYearlyLumpSumINR: Number(rawSimulator.extraYearlyLumpSumINR) || 0,
+    simulatedRate: Number(rawSimulator.simulatedRate) || CURRENCY.defaultRate,
+  } : {
+    extraMonthlyPrepaymentGBP: 0,
+    extraYearlyLumpSumINR: 0,
+    simulatedRate: CURRENCY.defaultRate,
+  }
+
+  const [reportModal, setReportModal] = useState({ isOpen: false, title: '', htmlContent: '' })
+
+  const openReportModal = (title, htmlContent) => {
+    setReportModal({ isOpen: true, title, htmlContent })
+  }
+
+  const closeReportModal = () => {
+    setReportModal({ isOpen: false, title: '', htmlContent: '' })
+  }
+
+  // User customizable timeline structure & start date
+  const [rawTimelineConfig, setTimelineConfig] = useLocalStorage(`${profilePrefix}.timelineConfig`, {
+    planStartYear: new Date().getFullYear(),
+    planStartMonth: new Date().getMonth(), // 0-11
+    planDurationYears: PLAN.planYears, // 3 by default
+  })
+  const timelineConfig = useMemo(() => {
+    return (rawTimelineConfig && typeof rawTimelineConfig === 'object') ? {
+      planStartYear: Number(rawTimelineConfig.planStartYear) || new Date().getFullYear(),
+      planStartMonth: Number(rawTimelineConfig.planStartMonth) >= 0 ? Number(rawTimelineConfig.planStartMonth) : new Date().getMonth(),
+      planDurationYears: Number(rawTimelineConfig.planDurationYears) || PLAN.planYears,
+    } : {
+      planStartYear: new Date().getFullYear(),
+      planStartMonth: new Date().getMonth(),
+      planDurationYears: PLAN.planYears,
+    }
+  }, [rawTimelineConfig])
+
+  function updateTimelineConfig(patch) {
+    setTimelineConfig((prev) => ({ ...prev, ...patch }))
+  }
+
+  const [rawCustomPlan, setCustomPlan] = useLocalStorage(`${profilePrefix}.customPlan.v3`, {
+    monthlyIncome: PLAN.monthlyIncome,
+    rentMid: (PLAN.expenses.rent.min + PLAN.expenses.rent.max) / 2,
+    bills: PLAN.expenses.bills,
+    travel: PLAN.expenses.travel,
+    food: PLAN.expenses.food,
+    monthlySavingsTarget: PLAN.monthlySavingsTarget,
+    shopping: 0,
+    entertainment: 0,
+    health: 0,
+    education: 0,
+    insurance: 0,
+    misc: 0,
+  })
+  const customPlan = useMemo(() => {
+    const planYears = rawTimelineConfig?.planDurationYears || 3
+    // Strategy: divide remaining loan across plan years, reduce by co-applicant contribution
+    const coApplicantYearlyINR = hasCoApplicant ? Number(coApplicantContribution) * 12 : 0
+    const targetYearlyLumpSumINR = Math.max(0, Math.floor(basicLoan / planYears) - coApplicantYearlyINR)
+    const dynamicMonthlySavingsTarget = Math.ceil((targetYearlyLumpSumINR / rate) / 12)
+
+    return (rawCustomPlan && typeof rawCustomPlan === 'object') ? {
+      monthlyIncome: Number(rawCustomPlan.monthlyIncome) >= 0 ? Number(rawCustomPlan.monthlyIncome) : 1300,
+      rentMid: Number(rawCustomPlan.rentMid) >= 0 ? Number(rawCustomPlan.rentMid) : 300,
+      bills: Number(rawCustomPlan.bills) >= 0 ? Number(rawCustomPlan.bills) : 100,
+      travel: Number(rawCustomPlan.travel) >= 0 ? Number(rawCustomPlan.travel) : 100,
+      food: Number(rawCustomPlan.food) >= 0 ? Number(rawCustomPlan.food) : 120,
+      monthlySavingsTarget: Number(rawCustomPlan.monthlySavingsTarget) >= 0 ? Number(rawCustomPlan.monthlySavingsTarget) : dynamicMonthlySavingsTarget,
+      shopping: Number(rawCustomPlan.shopping) >= 0 ? Number(rawCustomPlan.shopping) : 0,
+      entertainment: Number(rawCustomPlan.entertainment) >= 0 ? Number(rawCustomPlan.entertainment) : 0,
+      health: Number(rawCustomPlan.health) >= 0 ? Number(rawCustomPlan.health) : 0,
+      education: Number(rawCustomPlan.education) >= 0 ? Number(rawCustomPlan.education) : 0,
+      insurance: Number(rawCustomPlan.insurance) >= 0 ? Number(rawCustomPlan.insurance) : 0,
+      misc: Number(rawCustomPlan.misc) >= 0 ? Number(rawCustomPlan.misc) : 0,
+    } : {
+      monthlyIncome: 1300,
+      rentMid: 300,
+      bills: 100,
+      travel: 100,
+      food: 120,
+      monthlySavingsTarget: dynamicMonthlySavingsTarget,
+      shopping: 0,
+      entertainment: 0,
+      health: 0,
+      education: 0,
+      insurance: 0,
+      misc: 0,
+    }
+  }, [rawCustomPlan, basicLoan, rate, interestRate, moratoriumMonths, coApplicantContribution, hasCoApplicant])
+
+  function updateCustomPlan(patch) {
+    setCustomPlan((prev) => ({ ...prev, ...patch }))
+  }
+
+  // Automatically recalibrate and sync the monthly prepayment target whenever inputs change
+  React.useEffect(() => {
+    const planYears = rawTimelineConfig?.planDurationYears || 3
+    // Strategy: divide remaining loan across plan years, reduce by co-applicant contribution
+    const coApplicantYearlyINR = hasCoApplicant ? Number(coApplicantContribution) * 12 : 0
+    const targetYearlyLumpSumINR = Math.max(0, Math.floor(basicLoan / planYears) - coApplicantYearlyINR)
+    const dynamicMonthlySavingsTarget = Math.ceil((targetYearlyLumpSumINR / rate) / 12)
+
+    setCustomPlan((prev) => {
+      if (prev && prev.monthlySavingsTarget !== dynamicMonthlySavingsTarget) {
+        return { ...prev, monthlySavingsTarget: dynamicMonthlySavingsTarget }
+      }
+      return prev
+    })
+  }, [basicLoan, rate, interestRate, moratoriumMonths, coApplicantContribution, hasCoApplicant])
+
+  // timelineConfig moved up
+
+  const [strategyChecks, setStrategyChecks] = useLocalStorage(`${profilePrefix}.strategyChecks`, [true, false, false, false])
+
+  // The dynamic timeline, anchored to the chosen year, month, and duration
+  const timeline = useMemo(
+    () => buildMonthTimeline(timelineConfig.planDurationYears * 12, new Date(timelineConfig.planStartYear, timelineConfig.planStartMonth, 1)),
+    [timelineConfig]
+  )
+
+  const currentKey = timeline[0]?.key
+
+  function updateEntry(key, patch) {
+    setEntries((prev) => {
+      const existing = prev[key] || {}
+      const updated = { ...existing, ...patch }
+      // If saved is explicitly null or undefined, keep it null (unentered)
+      if (patch.saved === null) {
+        updated.saved = null
+      }
+      return {
+        ...prev,
+        [key]: updated,
+      }
+    })
+  }
+
+  function getEntry(key) {
+    return entries[key] || { saved: null, transferred: false, note: '' }
+  }
+
+  // Account Management methods
+  function addAccount(account) {
+    const newAcc = {
+      id: `acc-${Date.now()}`,
+      status: 'Active',
+      ...account,
+    }
+    setAccounts((prev) => [newAcc, ...prev])
+  }
+
+  function updateAccount(id, patch) {
+    setAccounts((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)))
+  }
+
+  function deleteAccount(id) {
+    setAccounts((prev) => prev.filter((a) => a.id !== id))
+  }
+
+  // Derived totals used across Dashboard / SavingsTracker / Analytics
+  const derived = useMemo(() => {
+    const getSavedAmount = (k) => {
+      const s = entries[k]?.saved
+      return (s !== null && s !== undefined && s !== '' && !isNaN(Number(s))) ? Number(s) : 0
+    }
+    const thisYearMonths = timeline.slice(0, 12)
+    const savedThisYear = thisYearMonths.reduce((sum, m) => sum + getSavedAmount(m.key), 0)
+    const savedAllTime = timeline.reduce((sum, m) => sum + getSavedAmount(m.key), 0)
+    const savedThisMonth = getSavedAmount(currentKey)
+    
+    // Calculate total monthly committed outgoings in GBP equivalent across active accounts
+    const activeMonthlyOutgoingsGBP = accounts
+      .filter((a) => a.status === 'Active' && a.frequency === 'Monthly')
+      .reduce((sum, a) => {
+        const amtGBP = a.currency === 'INR' ? a.targetAmount / rate : a.targetAmount
+        return sum + amtGBP
+      }, 0)
+
+    const activeAssetsCount = accounts.filter((a) => a.type === 'Asset').length
+    const activeEMIsCount = accounts.filter((a) => a.type === 'EMI').length
+
+    // Dynamic Tracking & Step 3: Three-Year Savings Plan Engine (Single Source of Truth)
+    const planYears = timelineConfig?.planDurationYears || 3
+    const termMonths = planYears * 12
+    const I_monthly = basicLoan * ((interestRate / 12) / 100)
+    const monthlyBaseline = basicLoan * 0.01
+    const studentShareMonthly = Math.max(0, monthlyBaseline - (hasCoApplicant ? Number(coApplicantContribution) : 0))
+    const I_unpaidTotal = studentShareMonthly * moratoriumMonths
+    const P_grad = basicLoan + I_unpaidTotal
+
+    // 1. Overview (Dashboard) Target: Preserved existing calculation
+    const coApplicantYearlyINR = hasCoApplicant ? Number(coApplicantContribution) * 12 : 0
+    const overviewYearlyLumpSumINR = Math.max(0, Math.floor(basicLoan / planYears) - coApplicantYearlyINR)
+    const overviewMonthlySavingsGBP = Math.ceil((overviewYearlyLumpSumINR / rate) / 12)
+
+    // 2. Step 3: Three-Year Savings Plan Target (For Analytics & Savings Tracker)
+    const fixedEMIAllYears = (LOAN.monthlyEMIINR || 5000) * termMonths
+    const planYearlyLumpSumINR = Math.max(0, Math.floor((P_grad - fixedEMIAllYears) / planYears))
+    const planMonthlySavingsGBP = Math.ceil((planYearlyLumpSumINR / rate) / 12)
+
+    // Three-Year Plan breakdown array per plan year
+    const threeYearPlan = Array.from({ length: planYears }, (_, i) => ({
+      yearNumber: i + 1,
+      label: `Plan Year ${i + 1}`,
+      monthlyTargetGBP: planMonthlySavingsGBP,
+      yearlyLumpSumINR: planYearlyLumpSumINR,
+      yearlyLumpSumGBP: planMonthlySavingsGBP * 12,
+    }))
+
+    // Elapsed Months logic
+    const currentMonthIdx = timeline.findIndex(m => m.key === currentKey)
+    const elapsedMonths = Math.max(1, currentMonthIdx + 1)
+    
+    // Deficit calculation (based on Overview target)
+    const expectedSavingsToDate = elapsedMonths * overviewMonthlySavingsGBP
+    const deficitGBP = Math.max(0, expectedSavingsToDate - savedAllTime)
+    
+    // Rollover/Catch-up
+    const remainingMonths = Math.max(1, termMonths - elapsedMonths)
+    const catchUpMonthlySavingsGBP = deficitGBP > 0 
+      ? overviewMonthlySavingsGBP + (deficitGBP / remainingMonths) 
+      : overviewMonthlySavingsGBP
+
+    // Business Rules: Forex markup (+₹2) and Credit Advance (1% fee)
+    const marketRate = rate
+    const freedomPlanRate = rate + 2.0
+    const forexMarkup = 2.0
+    const creditAdvanceFee = Math.round(basicLoan * 0.01)
+    const netAmountReceived = Math.max(0, basicLoan - creditAdvanceFee)
+
+    return {
+      savedThisYear,
+      savedAllTime,
+      savedThisMonth,
+      activeMonthlyOutgoingsGBP,
+      activeAssetsCount,
+      activeEMIsCount,
+      
+      // Overview (Dashboard) calculations
+      overviewYearlyLumpSumINR,
+      overviewMonthlySavingsGBP,
+      targetYearlyLumpSumINR: overviewYearlyLumpSumINR,
+      targetMonthlySavingsGBP: overviewMonthlySavingsGBP,
+
+      // 3-Year Plan (Analytics & Savings) calculations
+      planYearlyLumpSumINR,
+      planMonthlySavingsGBP,
+      planYearlySavingsGBP: (planMonthlySavingsGBP * 12) || PLAN.yearlyTarget || 5469,
+      savingsYearlyTargetGBP: (planMonthlySavingsGBP * 12) || PLAN.yearlyTarget || 5469,
+      threeYearPlan,
+
+      // Dynamic timeline metrics
+      P_grad,
+      I_unpaidTotal,
+      studentShareMonthly,
+      I_monthly,
+      elapsedMonths,
+      expectedSavingsToDate,
+      deficitGBP,
+      remainingMonths,
+      catchUpMonthlySavingsGBP,
+
+      // Business Rules & Forex Math
+      marketRate,
+      freedomPlanRate,
+      forexMarkup,
+      creditAdvanceFee,
+      netAmountReceived,
+    }
+  }, [timeline, entries, currentKey, accounts, rate, basicLoan, interestRate, moratoriumMonths, coApplicantContribution, hasCoApplicant])
+
+  // Update completion validation workflow
+  const completeValueUpdate = React.useCallback((options = {}) => {
+    const monthlyTarget = options.target !== undefined ? options.target : derived.targetMonthlySavingsGBP
+    const currentProgress = options.progress !== undefined ? options.progress : derived.savedThisMonth
+    const remainingDifference = Math.max(0, monthlyTarget - currentProgress)
+
+    if (remainingDifference > 0) {
+      // Target NOT reached -> play target alert sound (target.mp3)
+      playTargetSound()
+    }
+  }, [derived.targetMonthlySavingsGBP, derived.savedThisMonth])
+
+  const value = {
+    darkMode,
+    setDarkMode,
+    soundEnabled,
+    setSoundEnabled,
+    rate,
+    setRate,
+    basicLoan,
+    setBasicLoan,
+    interestRate,
+    setInterestRate,
+    moratoriumMonths,
+    setMoratoriumMonths,
+    coApplicantContribution,
+    setCoApplicantContribution,
+    hasCoApplicant,
+    setHasCoApplicant,
+    entries,
+    getEntry,
+    updateEntry,
+    generalNotes,
+    setGeneralNotes,
+    accounts,
+    addAccount,
+    updateAccount,
+    deleteAccount,
+    simulator,
+    setSimulator,
+    customPlan,
+    updateCustomPlan,
+    timelineConfig,
+    updateTimelineConfig,
+    isLoggedIn,
+    setIsLoggedIn,
+    currentUser,
+    setCurrentUser,
+    users,
+    setUsers,
+    isBasicUnlocked,
+    setIsBasicUnlocked,
+    isProUnlocked,
+    setIsProUnlocked,
+    proLeadData,
+    setProLeadData,
+    strategyChecks,
+    setStrategyChecks,
+    timeline,
+    currentKey,
+    derived,
+    allRates,
+    effectiveRates,
+    isAnalyticsLocked,
+    setIsAnalyticsLocked,
+    sessionLoginTime,
+    setSessionLoginTime,
+    isSessionActive,
+    touchSession,
+    unlockPremium,
+    completeValueUpdate,
+    reportModal,
+    openReportModal,
+    closeReportModal,
+    noIncomePeriods,
+    addNoIncomePeriod,
+    updateNoIncomePeriod,
+    removeNoIncomePeriod,
+    resetScheduleAdjustments,
+    graceAllocationMode,
+    setGraceAllocationMode,
+  }
+
+  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
+}
+
+export function useStore() {
+  const ctx = useContext(StoreContext)
+  if (!ctx) throw new Error('useStore must be used within a StoreProvider')
+  return ctx
+}
