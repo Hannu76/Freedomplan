@@ -1,0 +1,164 @@
+[
+  {
+    "phone": "447912345678",
+    "name": "Brand New Student",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-25T10:20:07.971Z"
+  },
+  {
+    "phone": "447912345678",
+    "name": "Idempotency Test User",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-25T09:55:48.422Z"
+  },
+  {
+    "phone": "447993144249",
+    "name": "jakeer hussina",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-25T09:48:57.692Z"
+  },
+  {
+    "phone": "447912345678",
+    "name": "Jakeer Hussain Test",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-25T09:47:23.052Z"
+  },
+  {
+    "phone": "919876543210",
+    "name": "India User",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:50:49.498Z"
+  },
+  {
+    "phone": "447912345678",
+    "name": "UK User 2",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:50:49.481Z"
+  },
+  {
+    "phone": "447912345678",
+    "name": "UK User 1",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:50:49.462Z"
+  },
+  {
+    "phone": "45845689745",
+    "name": "ncjbkn",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:31:20.201Z"
+  },
+  {
+    "phone": "45845689745",
+    "name": "ncjbkn",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:28:14.317Z"
+  },
+  {
+    "phone": "45845689745",
+    "name": "ncjbkn",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:27:46.658Z"
+  },
+  {
+    "phone": "91287500259",
+    "name": "ncjbkn",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:27:27.044Z"
+  },
+  {
+    "phone": "91287500259",
+    "name": "ncjbkn",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:27:20.898Z"
+  },
+  {
+    "phone": "447987654321",
+    "name": "Sarah Connor",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:23:54.208Z"
+  },
+  {
+    "phone": "447123456789",
+    "name": "Alex Johnson",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-24T06:22:36.907Z"
+  },
+  {
+    "phone": "447700900077",
+    "name": "Test New User",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-23T06:44:01.578Z"
+  },
+  {
+    "phone": "447700900077",
+    "name": "Test New User",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-23T06:43:35.056Z"
+  },
+  {
+    "phone": "919876543210",
+    "name": "Live Verification Customer",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-22T11:34:32.131Z"
+  },
+  {
+    "phone": "447890123456",
+    "name": "Priya Sharma",
+    "status": "SENT",
+    "simulated": true,
+    "note": "Simulated dispatch (add META_WA_ACCESS_TOKEN & META_WA_PHONE_NUMBER_ID to server/.env for live dispatch)",
+    "inviteLink": "https://chat.whatsapp.com/CFxYiXQfVKUAm9RJRddfwS",
+    "timestamp": "2026-08-22T06:56:51.475Z"
+  }
+]
