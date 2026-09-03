@@ -1,0 +1,96 @@
+[
+  {
+    "id": "act_1788411918569_dmgxj",
+    "timestamp": "2026-09-03T05:05:18.569Z",
+    "email": "bindu@leoglobaloverseas.co",
+    "action": "PAYMENT_LINK_SENT",
+    "plan": "FreedomPlan Premium",
+    "paymentStatus": "Payment Link Sent",
+    "updatedBy": "Admin Direct Dispatch"
+  },
+  {
+    "id": "act_1788411215145_0s3k8",
+    "timestamp": "2026-09-03T04:53:35.145Z",
+    "email": "us176187@gmail.com",
+    "action": "PAYMENT_LINK_SENT",
+    "plan": "FreedomPlan Free (Lead)",
+    "paymentStatus": "Payment Link Sent",
+    "updatedBy": "Admin Direct Dispatch"
+  },
+  {
+    "id": "act_1788411207473_ys0bn",
+    "timestamp": "2026-09-03T04:53:27.473Z",
+    "email": "pallapua954@gmail.com",
+    "action": "PAYMENT_LINK_SENT",
+    "plan": "FreedomPlan Free (Lead)",
+    "paymentStatus": "Payment Link Sent",
+    "updatedBy": "Admin Direct Dispatch"
+  },
+  {
+    "id": "act_1788411197084_dk3vf",
+    "timestamp": "2026-09-03T04:53:17.084Z",
+    "email": "nagarajuacademicoverseas@gmail.com",
+    "action": "PAYMENT_LINK_SENT",
+    "plan": "FreedomPlan Free (Lead)",
+    "paymentStatus": "Payment Link Sent",
+    "updatedBy": "Admin Direct Dispatch"
+  },
+  {
+    "id": "act_1788409276093_gqg9l",
+    "timestamp": "2026-09-03T04:21:16.093Z",
+    "email": "freedomplan786@gmail.com",
+    "action": "ASSIGN",
+    "accountType": "Premium",
+    "plan": "Premium",
+    "duration": "30d",
+    "expiryDate": "2026-10-03T04:21:16.080Z",
+    "reason": "Promo: UK Student Special",
+    "updatedBy": "Freedom CRM Admin (Promotion Console)"
+  },
+  {
+    "id": "act_1788407837644_xl52r",
+    "timestamp": "2026-09-03T03:57:17.644Z",
+    "email": "anasurrahmansheik@gmail.com",
+    "action": "ASSIGN",
+    "accountType": "Free",
+    "plan": "Free",
+    "duration": "Cancelled",
+    "expiryDate": null,
+    "reason": "Manual Premium Access",
+    "updatedBy": "Freedom CRM Admin"
+  },
+  {
+    "id": "act_1788407831845_c64cn",
+    "timestamp": "2026-09-03T03:57:11.845Z",
+    "email": "anasurrahmansheik@gmail.com",
+    "action": "ASSIGN",
+    "accountType": "Premium",
+    "plan": "Premium",
+    "duration": "30d",
+    "expiryDate": "2026-10-03T03:57:11.840Z",
+    "reason": "Manual Premium Access",
+    "updatedBy": "Freedom CRM Admin"
+  },
+  {
+    "id": "act_1788407617003_adfah",
+    "timestamp": "2026-09-03T03:53:37.003Z",
+    "email": "student_1788407614986@example.com",
+    "action": "PAYMENT_LINK_SENT",
+    "amount": 499,
+    "plan": "FreedomPlan Premium",
+    "duration": "30d",
+    "updatedBy": "Freedom CRM Admin"
+  },
+  {
+    "id": "act_1788407615091_zqocu",
+    "timestamp": "2026-09-03T03:53:35.091Z",
+    "email": "student_1788407614986@example.com",
+    "action": "ASSIGN",
+    "accountType": "Premium",
+    "plan": "Premium",
+    "duration": "15d",
+    "expiryDate": "2026-09-18T03:53:35.085Z",
+    "reason": "Student Offer",
+    "updatedBy": "Freedom CRM Admin"
+  }
+]

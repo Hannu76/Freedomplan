@@ -1,0 +1,42 @@
+[
+  {
+    "id": "promo-uk-student-special",
+    "name": "UK Student Special",
+    "type": "Free Premium Access",
+    "duration": "30d",
+    "status": "Active",
+    "description": "Special 30-day Premium access for students planning for UK universities.",
+    "recipientsCount": 15,
+    "createdAt": "2026-08-15T10:00:00.000Z"
+  },
+  {
+    "id": "promo-premium-trial",
+    "name": "Premium Trial",
+    "type": "Free Trial",
+    "duration": "7d",
+    "status": "Active",
+    "description": "7-day complimentary trial for new student registrations.",
+    "recipientsCount": 32,
+    "createdAt": "2026-08-20T12:00:00.000Z"
+  },
+  {
+    "id": "promo-student-support",
+    "name": "Student Support Offer",
+    "type": "Special Offer",
+    "duration": "60d",
+    "status": "Active",
+    "description": "Complimentary 2-month access for students managing educational loans.",
+    "recipientsCount": 9,
+    "createdAt": "2026-08-28T09:30:00.000Z"
+  },
+  {
+    "id": "promo-limited-access",
+    "name": "Limited-Time Access",
+    "type": "Promotional Access",
+    "duration": "15d",
+    "status": "Active",
+    "description": "15-day promotional access for university expo participants.",
+    "recipientsCount": 6,
+    "createdAt": "2026-09-01T11:00:00.000Z"
+  }
+]

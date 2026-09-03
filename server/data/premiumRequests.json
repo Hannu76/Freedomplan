@@ -1,0 +1,52 @@
+[
+  {
+    "email": "us176187@gmail.com",
+    "name": "Uppu venkata srinivasa Rao",
+    "plan": "FreedomPlan Free (Lead)",
+    "amount": 499,
+    "status": "payment_link_sent",
+    "paymentStatus": "Payment Link Sent",
+    "paymentLinkSentAt": "2026-09-03T04:53:35.143Z",
+    "paymentUrl": "http://localhost:5173/?payment=true&email=us176187%40gmail.com&plan=FreedomPlan%20Free%20(Lead)"
+  },
+  {
+    "email": "pallapua954@gmail.com",
+    "name": "Pallapu",
+    "plan": "FreedomPlan Free (Lead)",
+    "amount": 499,
+    "status": "payment_link_sent",
+    "paymentStatus": "Payment Link Sent",
+    "paymentLinkSentAt": "2026-09-03T04:53:27.471Z",
+    "paymentUrl": "http://localhost:5173/?payment=true&email=pallapua954%40gmail.com&plan=FreedomPlan%20Free%20(Lead)"
+  },
+  {
+    "email": "nagarajuacademicoverseas@gmail.com",
+    "name": "Nagaraju",
+    "plan": "FreedomPlan Free (Lead)",
+    "amount": 499,
+    "status": "payment_link_sent",
+    "paymentStatus": "Payment Link Sent",
+    "paymentLinkSentAt": "2026-09-03T04:53:17.081Z",
+    "paymentUrl": "http://localhost:5173/?payment=true&email=nagarajuacademicoverseas%40gmail.com&plan=FreedomPlan%20Free%20(Lead)"
+  },
+  {
+    "name": "Krishna G",
+    "email": "career.pristenoverseas@gmail.com",
+    "phone": "+91 7075766652",
+    "plan": "FreedomPlan Premium",
+    "amount": 499,
+    "status": "payment_link_sent",
+    "userId": null,
+    "createdAt": "2026-09-01T07:13:44.270Z"
+  },
+  {
+    "name": "Naveed",
+    "email": "naveedmd78600@gmail.com",
+    "phone": "+91 9182502259",
+    "plan": "FreedomPlan Premium",
+    "amount": 499,
+    "status": "payment_link_requested",
+    "userId": null,
+    "createdAt": "2026-08-18T17:03:26.685Z"
+  }
+]
